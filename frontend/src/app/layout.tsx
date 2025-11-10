@@ -3,8 +3,6 @@ import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { WebSocketProvider } from '@/contexts/WebSocketContext';
 import { ReactQueryProvider } from '@/lib/react-query';
-import EditorialHeader from '@/components/layout/EditorialHeader';
-import ModernFooter from '@/components/layout/ModernFooter';
 import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
