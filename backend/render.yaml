@@ -1,0 +1,73 @@
+services:
+  - type: web
+    name: horse-racing-backend
+    env: node
+    region: singapore
+    plan: starter
+    buildCommand: npm install && npm run build && npm run migrate:latest
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DB_HOST
+        fromDatabase:
+          name: horse-racing-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: horse-racing-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: horse-racing-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: horse-racing-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: horse-racing-db
+          property: password
+      - key: REDIS_HOST
+        fromService:
+          name: horse-racing-redis
+          type: redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          name: horse-racing-redis
+          type: redis
+          property: port
+      - key: REDIS_PASSWORD
+        fromService:
+          name: horse-racing-redis
+          type: redis
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ODDS_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_KEY
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: FRONTEND_URL
+        value: https://yourdomain.com
+
+databases:
+  - name: horse-racing-db
+    databaseName: horse_racing
+    plan: starter
+    region: singapore
+    postgresMajorVersion: 15
+
+  - name: horse-racing-redis
+    plan: starter
+    region: singapore
+    maxmemoryPolicy: allkeys-lru

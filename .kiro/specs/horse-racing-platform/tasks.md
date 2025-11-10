@@ -1,0 +1,357 @@
+# Implementation Plan
+
+- [x] 1. Set up project structure and development environment
+  - Initialize monorepo with backend and frontend workspaces
+  - Configure TypeScript with strict mode for both projects
+  - Set up ESLint and Prettier for code quality
+  - Configure Git hooks for pre-commit linting
+  - _Requirements: 6.1, 6.5_
+
+- [x] 2. Set up core infrastructure and databases
+  - [x] 2.1 Configure PostgreSQL database with TimescaleDB extension
+    - Create database schema for races, horses, bookmakers, users
+    - Set up TimescaleDB hypertables for odds_snapshots
+    - Configure database connection pooling
+    - _Requirements: 1.4, 7.1_
+  - [x] 2.2 Set up Redis for caching and session management
+    - Configure Redis instance with persistence
+    - Implement cache key naming conventions
+    - Set up Redis pub/sub for WebSocket coordination
+    - _Requirements: 3.3, 6.1_
+  - [x] 2.3 Create database migration system
+    - Set up migration tool (e.g., Knex.js or TypeORM)
+    - Create initial migration files for all tables
+    - Document migration workflow
+    - _Requirements: 6.1_
+
+- [x] 3. Implement bookmaker API integration service
+  - [x] 3.1 Create unified bookmaker API client interface
+    - Define TypeScript interfaces for API responses
+    - Implement authentication handlers (OAuth, API key, Basic)
+    - Create rate limiting and quota management
+    - _Requirements: 10.1, 10.5_
+  - [x] 3.2 Integrate with TAB API
+    - Implement TAB-specific API client
+    - Handle TAB authentication and token refresh
+    - Parse and normalize TAB odds format
+    - _Requirements: 10.1, 10.2_
+  - [x] 3.3 Integrate with Sportsbet API
+    - Implement Sportsbet-specific API client
+    - Handle Sportsbet authentication
+    - Parse and normalize Sportsbet odds format
+    - _Requirements: 10.1, 10.2_
+  - [x] 3.4 Integrate with additional bookmaker APIs (Ladbrokes, Neds, Bet365)
+    - Implement API clients for each bookmaker
+    - Handle authentication for each platform
+    - Normalize odds data across all sources
+    - _Requirements: 10.1, 10.2_
+  - [x] 3.5 Implement circuit breaker pattern for API failures
+    - Create circuit breaker wrapper for API calls
+    - Configure failure thresholds and timeout periods
+    - Implement fallback to scraping when circuit opens
+    - _Requirements: 10.4, 6.2_
+
+- [x] 4. Implement odds collection and processing
+  - [x] 4.1 Create odds data processor
+    - Implement odds normalization across different formats
+    - Create race and horse matching logic
+    - Handle duplicate detection
+    - _Requirements: 1.3, 1.4_
+  - [x] 4.2 Implement odds validation
+    - Validate odds values (must be >= 1.01)
+    - Check implied probability sums
+    - Flag anomalous odds changes
+    - _Requirements: 1.3, 6.4_
+  - [x] 4.3 Create scheduled odds collection jobs
+    - Set up Bull queue for background jobs
+    - Schedule periodic odds fetching (every 30-60 seconds)
+    - Implement job retry logic
+    - _Requirements: 1.2, 3.3_
+  - [x] 4.4 Store odds snapshots in TimescaleDB
+    - Insert odds data into time-series tables
+    - Implement data retention policies
+    - Create indexes for query performance
+    - _Requirements: 1.4, 7.1_
+
+- [x] 5. Build REST API backend
+  - [x] 5.1 Set up Express.js server with TypeScript
+    - Configure Express middleware (CORS, body-parser, helmet)
+    - Set up error handling middleware
+    - Configure logging with Winston or Pino
+    - _Requirements: 6.5_
+  - [x] 5.2 Implement races API endpoints
+    - GET /api/races - List all upcoming races with filters
+    - GET /api/races/:id - Get specific race details
+    - GET /api/races/:id/odds - Get current odds for race
+    - GET /api/races/:id/history - Get historical odds
+    - _Requirements: 3.1, 3.2, 7.2_
+  - [x] 5.3 Implement bookmakers API endpoints
+    - GET /api/bookmakers - List all bookmakers
+    - GET /api/bookmakers/:id - Get bookmaker details
+    - GET /api/bookmakers/:id/promotions - Get current promotions
+    - _Requirements: 15.1, 15.2, 15.3_
+  - [x] 5.4 Implement affiliate tracking endpoints
+    - POST /api/referrals/click - Track bookmaker link clicks
+    - POST /api/referrals/conversion - Track conversions
+    - GET /api/referrals/stats - Get referral statistics
+    - _Requirements: 5.1, 5.2_
+  - [x] 5.5 Implement authentication and authorization
+    - Set up JWT-based authentication
+    - Create user registration and login endpoints
+    - Implement role-based access control (user, ambassador, admin)
+    - _Requirements: 4.1, 14.1_
+
+- [x] 6. Implement news aggregation service
+  - [x] 6.1 Create news source scrapers
+    - Implement RSS feed readers for racing news sites
+    - Create web scrapers for sites without RSS
+    - Handle duplicate detection using content hashing
+    - _Requirements: 2.1, 6.3_
+  - [x] 6.2 Implement entity extraction
+    - Extract horse names, jockey names, trainer names from articles
+    - Use regex patterns and NLP for entity recognition
+    - Link entities to database records
+    - _Requirements: 2.5, 13.2_
+  - [x] 6.3 Schedule news aggregation jobs
+    - Set up periodic news collection (every 15-30 minutes)
+    - Implement job queue for news processing
+    - Handle source failures gracefully
+    - _Requirements: 2.2, 6.2_
+
+- [x] 7. Implement sentiment analysis service
+  - [x] 7.1 Set up OpenAI API integration
+    - Configure OpenAI API client with credentials
+    - Implement rate limiting and cost monitoring
+    - Create prompt templates for sentiment analysis
+    - _Requirements: 2.3, 2.4_
+  - [x] 7.2 Implement sentiment analysis for news articles
+    - Analyze overall article sentiment
+    - Extract entity-specific sentiment
+    - Generate confidence scores
+    - _Requirements: 2.3, 11.3_
+  - [x] 7.3 Implement AI content rewriting
+    - Create prompts for content summarization
+    - Extract key insights from articles
+    - Cache rewritten content to avoid redundant API calls
+    - _Requirements: 2.4, 13.4_
+  - [x] 7.4 Create news API endpoints
+    - GET /api/news - List news articles with filters
+    - GET /api/news/:id - Get specific article with sentiment
+    - GET /api/news/race/:raceId - Get news related to race
+    - _Requirements: 13.1, 13.2, 13.5_
+
+- [x] 8. Build Next.js frontend application
+  - [x] 8.1 Set up Next.js project with App Router
+    - Initialize Next.js 14 with TypeScript
+    - Configure Tailwind CSS
+    - Set up folder structure for pages and components
+    - _Requirements: 3.1_
+  - [x] 8.2 Create homepage and race listing page
+    - Build homepage with featured races
+    - Create race listing page with filters
+    - Implement race search functionality
+    - _Requirements: 3.1, 8.1, 8.2_
+  - [x] 8.3 Build race details and odds comparison page
+    - Create odds table component with bookmaker comparison
+    - Highlight best available odds
+    - Display race information and form
+    - Implement affiliate link tracking on clicks
+    - _Requirements: 3.1, 3.5, 5.1_
+  - [x] 8.4 Implement historical odds charts
+    - Create odds movement visualization with Recharts
+    - Display opening vs current odds
+    - Show odds velocity indicators
+    - _Requirements: 7.2, 7.3, 7.4_
+  - [x] 8.5 Build news feed page
+    - Create news article listing with sentiment indicators
+    - Implement news filtering by entity
+    - Display related races for each article
+    - _Requirements: 13.1, 13.2, 13.3_
+  - [x] 8.6 Create bookmaker comparison page
+    - Display bookmaker ratings and reviews
+    - Show current promotions and features
+    - Implement feature-based filtering
+    - _Requirements: 15.1, 15.2, 15.3, 15.4_
+
+- [x] 9. Implement user features and personalization
+  - [x] 9.1 Create user authentication UI
+    - Build registration and login forms
+    - Implement JWT token management
+    - Create protected route wrapper
+    - _Requirements: 4.1_
+  - [x] 9.2 Build user watchlist functionality
+    - Create watchlist management UI
+    - Implement add/remove horses, jockeys, trainers
+    - Display watchlist on user dashboard
+    - _Requirements: 11.1, 11.2_
+  - [x] 9.3 Implement personalized news feed
+    - Filter news by watchlist entities
+    - Prioritize relevant articles
+    - Show sentiment for watchlist entities
+    - _Requirements: 11.2, 11.3_
+  - [x] 9.4 Create user preferences and notifications
+    - Build preferences management UI
+    - Implement email digest scheduling
+    - Set up push notification preferences
+    - _Requirements: 11.4, 11.5_
+
+- [x] 10. Implement ambassador content management
+  - [x] 10.1 Create ambassador registration and approval workflow
+    - Build ambassador application form
+    - Create admin approval interface
+    - Implement ambassador profile creation
+    - _Requirements: 4.1, 14.1, 14.2_
+  - [x] 10.2 Build article creation and editing interface
+    - Create rich text editor for articles
+    - Implement image upload functionality
+    - Add article preview feature
+    - _Requirements: 4.1, 4.3_
+  - [x] 10.3 Implement article publishing workflow
+    - Create draft/pending/published status system
+    - Build admin moderation queue
+    - Implement article scheduling
+    - _Requirements: 4.2, 14.2_
+  - [x] 10.4 Create ambassador dashboard
+    - Display article performance metrics
+    - Show referral statistics and earnings
+    - Highlight top-performing content
+    - _Requirements: 12.1, 12.2, 12.5_
+  - [x] 10.5 Build public ambassador pages
+    - Create ambassador directory page
+    - Build individual ambassador profile pages
+    - Display ambassador articles and tips
+    - _Requirements: 4.5_
+
+- [x] 11. Build admin dashboard
+  - [x] 11.1 Create admin overview dashboard
+    - Display key metrics (users, revenue, traffic)
+    - Show system health indicators
+    - Display recent activity feed
+    - _Requirements: 5.3, 6.5_
+  - [x] 11.2 Implement ambassador management interface
+    - List all ambassadors with status
+    - Approve/suspend ambassador accounts
+    - Manage commission rates
+    - _Requirements: 14.1, 14.3, 14.4_
+  - [x] 11.3 Build content moderation tools
+    - Display pending articles queue
+    - Implement approve/reject workflow
+    - Show content analytics
+    - _Requirements: 14.2, 14.5_
+  - [x] 11.4 Create odds source monitoring dashboard
+    - Display API health status for each bookmaker
+    - Show scraper success rates
+    - Display quota usage and rate limits
+    - _Requirements: 6.1, 6.2, 6.5_
+  - [x] 11.5 Implement affiliate revenue reporting
+    - Generate revenue reports by bookmaker
+    - Show ambassador performance and commissions
+    - Display conversion rates and trends
+    - _Requirements: 5.3, 5.4_
+
+- [x] 12. Implement real-time features with WebSocket
+  - [x] 12.1 Set up Socket.io server
+    - Configure Socket.io with Express
+    - Implement connection authentication
+    - Set up Redis adapter for multi-server support
+    - _Requirements: 3.3_
+  - [x] 12.2 Implement race odds subscription
+    - Allow clients to subscribe to specific races
+    - Broadcast odds updates to subscribed clients
+    - Handle connection lifecycle
+    - _Requirements: 3.3_
+  - [x] 12.3 Integrate WebSocket client in frontend
+    - Connect to WebSocket server
+    - Subscribe to race odds updates
+    - Update UI in real-time
+    - _Requirements: 3.3_
+
+- [x] 13. Implement mobile responsiveness
+  - [x] 13.1 Optimize layouts for mobile screens
+    - Create responsive odds table for small screens
+    - Implement mobile navigation
+    - Optimize touch interactions
+    - _Requirements: 9.1, 9.3, 9.5_
+  - [x] 13.2 Set up push notifications
+    - Configure Firebase Cloud Messaging
+    - Implement notification sending service
+    - Create notification preferences UI
+    - _Requirements: 9.4, 11.5_
+  - [x] 13.3 Optimize mobile performance
+    - Implement lazy loading for images
+    - Optimize bundle size
+    - Test on 3G connection speeds
+    - _Requirements: 9.2_
+
+- [ ] 14. Implement data export functionality
+  - [ ] 14.1 Create data export API endpoints
+    - Implement CSV export for odds data
+    - Implement JSON export for odds data
+    - Add filtering by date range and race
+    - _Requirements: 16.1, 16.3, 16.4_
+  - [ ] 14.2 Build export UI in frontend
+    - Create export request form
+    - Display export progress
+    - Provide download link when ready
+    - _Requirements: 16.2_
+  - [ ] 14.3 Implement premium API access
+    - Create API key generation for premium users
+    - Implement API authentication
+    - Document API endpoints
+    - _Requirements: 16.5_
+
+- [x] 15. Implement SEO optimization
+  - [x] 15.1 Configure server-side rendering
+    - Ensure all public pages use SSR
+    - Implement dynamic metadata generation
+    - Create sitemap generation
+    - _Requirements: 3.1, 3.2_
+  - [x] 15.2 Add structured data markup
+    - Implement Schema.org markup for races
+    - Add structured data for articles
+    - Include Open Graph tags
+    - _Requirements: 3.1_
+  - [x] 15.3 Create SEO-optimized content pages
+    - Build racing guides and educational content
+    - Create bookmaker review pages
+    - Implement internal linking strategy
+    - _Requirements: 15.1, 15.2_
+
+- [x] 16. Implement monitoring and observability
+  - [x] 16.1 Set up error tracking with Sentry
+    - Configure Sentry for backend and frontend
+    - Implement error boundaries in React
+    - Set up alert notifications
+    - _Requirements: 6.5_
+  - [x] 16.2 Implement application logging
+    - Set up structured logging
+    - Log API requests and responses
+    - Log odds collection activities
+    - _Requirements: 6.5_
+  - [x] 16.3 Set up metrics and dashboards
+    - Configure Prometheus for metrics collection
+    - Create Grafana dashboards
+    - Set up alerting rules
+    - _Requirements: 6.5_
+
+- [x] 17. Deploy and configure production environment
+  - [x] 17.1 Deploy frontend to Vercel
+    - Configure Vercel project
+    - Set up environment variables
+    - Configure custom domain
+    - _Requirements: 6.4_
+  - [x] 17.2 Deploy backend to Railway or Render
+    - Configure backend deployment
+    - Set up database connections
+    - Configure Redis instance
+    - _Requirements: 6.4_
+  - [x] 17.3 Configure Cloudflare CDN
+    - Set up CDN for static assets
+    - Configure caching rules
+    - Enable DDoS protection
+    - _Requirements: 6.4_
+  - [x] 17.4 Set up database backups
+    - Configure automated daily backups
+    - Test backup restoration
+    - Set up backup retention policy
+    - _Requirements: 6.1_

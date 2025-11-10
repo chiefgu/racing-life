@@ -1,0 +1,366 @@
+{
+  "info": {
+    "name": "Racing Life API",
+    "description": "Complete API collection for Racing Life application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"name\": \"Test User\",\n  \"password\": \"Password123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const response = pm.response.json();",
+                  "  pm.environment.set('jwt_token', response.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Password123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/auth/me"
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{base_url}}/api/auth/password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"Password123!\",\n  \"new_password\": \"NewPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Races",
+      "item": [
+        {
+          "name": "Get All Races",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/races?date=2024-12-25&venue=Flemington&status=upcoming",
+              "host": ["{{base_url}}"],
+              "path": ["api", "races"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-12-25",
+                  "description": "Filter by date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "venue",
+                  "value": "Flemington",
+                  "description": "Filter by venue"
+                },
+                {
+                  "key": "status",
+                  "value": "upcoming",
+                  "description": "Filter by status"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Race by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/races/1"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Race Odds",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/races/1/odds"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Odds History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/races/1/odds/history"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Bookmakers",
+      "item": [
+        {
+          "name": "Get All Bookmakers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/bookmakers"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bookmaker by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/bookmakers/1"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "News",
+      "item": [
+        {
+          "name": "Get All News",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/news?category=racing&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "news"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "racing"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get News by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/news/1"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Watchlist",
+      "item": [
+        {
+          "name": "Get Watchlist",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/watchlist"
+          },
+          "response": []
+        },
+        {
+          "name": "Add to Watchlist",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/watchlist",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entity_type\": \"horse\",\n  \"entity_name\": \"Thunder Bolt\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove from Watchlist",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{base_url}}/api/watchlist/1"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Preferences",
+      "item": [
+        {
+          "name": "Get Preferences",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/preferences"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Preferences",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{base_url}}/api/preferences",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notifications_enabled\": true,\n  \"odds_change_threshold\": 10,\n  \"default_bet_amount\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "API Key Authenticated",
+      "item": [
+        {
+          "name": "Get Races (API Key)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/api/races"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health & Metrics",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/health"
+          },
+          "response": []
+        },
+        {
+          "name": "Prometheus Metrics",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/metrics"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

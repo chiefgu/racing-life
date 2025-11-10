@@ -1,0 +1,170 @@
+# Prometheus alerting rules for Horse Racing Platform
+
+groups:
+  - name: api_alerts
+    interval: 30s
+    rules:
+      # High error rate
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(horse_racing_http_requests_total{status_code=~"5.."}[5m]))
+            /
+            sum(rate(horse_racing_http_requests_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High API error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+
+      # Slow API responses
+      - alert: SlowAPIResponses
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(horse_racing_http_request_duration_seconds_bucket[5m])) by (le, route)
+          ) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow API responses detected"
+          description: "95th percentile response time is {{ $value }}s for route {{ $labels.route }}"
+
+  - name: odds_collection_alerts
+    interval: 30s
+    rules:
+      # Odds collection failures
+      - alert: OddsCollectionFailures
+        expr: |
+          (
+            sum(rate(horse_racing_odds_collection_total{status="failure"}[10m])) by (bookmaker)
+            /
+            sum(rate(horse_racing_odds_collection_total[10m])) by (bookmaker)
+          ) > 0.2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High odds collection failure rate for {{ $labels.bookmaker }}"
+          description: "Failure rate is {{ $value | humanizePercentage }} (threshold: 20%)"
+
+      # No odds collected
+      - alert: NoOddsCollected
+        expr: |
+          sum(rate(horse_racing_odds_collected_total[15m])) by (bookmaker) == 0
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No odds collected from {{ $labels.bookmaker }}"
+          description: "No odds have been collected in the last 15 minutes"
+
+  - name: news_aggregation_alerts
+    interval: 30s
+    rules:
+      # News aggregation failures
+      - alert: NewsAggregationFailures
+        expr: |
+          (
+            sum(rate(horse_racing_news_aggregation_total{status="failure"}[30m])) by (source)
+            /
+            sum(rate(horse_racing_news_aggregation_total[30m])) by (source)
+          ) > 0.3
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High news aggregation failure rate for {{ $labels.source }}"
+          description: "Failure rate is {{ $value | humanizePercentage }} (threshold: 30%)"
+
+  - name: system_health_alerts
+    interval: 30s
+    rules:
+      # Database connection issues
+      - alert: DatabaseUnhealthy
+        expr: horse_racing_system_health{component="database"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection unhealthy"
+          description: "Database has been unhealthy for 2 minutes"
+
+      # Redis connection issues
+      - alert: RedisUnhealthy
+        expr: horse_racing_system_health{component="redis"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis connection unhealthy"
+          description: "Redis has been unhealthy for 2 minutes"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            process_resident_memory_bytes{job="backend"}
+            /
+            (1024 * 1024 * 1024)
+          ) > 1.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value }}GB (threshold: 1.5GB)"
+
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total{job="backend"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value | humanizePercentage }} (threshold: 80%)"
+
+  - name: websocket_alerts
+    interval: 30s
+    rules:
+      # Too many WebSocket connections
+      - alert: HighWebSocketConnections
+        expr: horse_racing_websocket_connections_active > 10000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High number of WebSocket connections"
+          description: "{{ $value }} active connections (threshold: 10000)"
+
+  - name: openai_alerts
+    interval: 30s
+    rules:
+      # High OpenAI API costs
+      - alert: HighOpenAICosts
+        expr: |
+          sum(increase(horse_racing_openai_cost_usd_total[1h])) > 10
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "High OpenAI API costs"
+          description: "OpenAI costs are ${{ $value }} in the last hour (threshold: $10)"
+
+      # OpenAI API failures
+      - alert: OpenAIAPIFailures
+        expr: |
+          (
+            sum(rate(horse_racing_openai_api_calls_total{status="failure"}[10m]))
+            /
+            sum(rate(horse_racing_openai_api_calls_total[10m]))
+          ) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High OpenAI API failure rate"
+          description: "Failure rate is {{ $value | humanizePercentage }} (threshold: 10%)"

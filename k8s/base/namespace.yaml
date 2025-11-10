@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: racing-life
+  labels:
+    name: racing-life
+    environment: production

@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # PostgreSQL with TimescaleDB for testing backups
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: horse-racing-db-backup-test
+    environment:
+      POSTGRES_DB: horse_racing
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_backup_test_data:/var/lib/postgresql/data
+      - ./scripts:/scripts
+      - /tmp/backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backup-test
+
+  # Backup service
+  backup:
+    image: postgres:15-alpine
+    container_name: horse-racing-backup-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: horse_racing
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      BACKUP_DIR: /backups
+      RETENTION_DAYS: 7
+    volumes:
+      - ./scripts:/scripts
+      - /tmp/backups:/backups
+    command: >
+      sh -c "
+        apk add --no-cache bash gzip &&
+        chmod +x /scripts/backup-database.sh &&
+        /scripts/backup-database.sh
+      "
+    networks:
+      - backup-test
+
+  # Restore service (for testing)
+  restore:
+    image: postgres:15-alpine
+    container_name: horse-racing-restore-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: horse_racing_restored
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      BACKUP_DIR: /backups
+    volumes:
+      - ./scripts:/scripts
+      - /tmp/backups:/backups
+    command: >
+      sh -c "
+        apk add --no-cache bash gzip postgresql-client &&
+        chmod +x /scripts/restore-database.sh &&
+        echo 'Waiting for backup file...' &&
+        sleep 10 &&
+        BACKUP_FILE=$$(ls -t /backups/horse_racing_backup_*.sql.gz | head -1) &&
+        if [ -f \"$$BACKUP_FILE\" ]; then
+          echo 'Found backup: '$$BACKUP_FILE &&
+          PGPASSWORD=postgres psql -h postgres -U postgres -c 'CREATE DATABASE horse_racing_restored;' &&
+          echo 'yes' | /scripts/restore-database.sh $$(basename $$BACKUP_FILE) &&
+          echo 'Restore completed successfully!';
+        else
+          echo 'No backup file found!';
+          exit 1;
+        fi
+      "
+    networks:
+      - backup-test
+    profiles:
+      - restore
+
+volumes:
+  postgres_backup_test_data:
+    driver: local
+
+networks:
+  backup-test:
+    driver: bridge
