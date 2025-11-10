@@ -16,7 +16,7 @@ interface Venue {
 }
 
 export default function LiveRacesSection() {
-  const { data: races, isLoading } = useRaces();
+  const { isLoading } = useRaces();
 
   // Mock data - organized by venue
   const mockVenues: Venue[] = [
