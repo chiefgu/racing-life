@@ -74,7 +74,7 @@ export default function NewsSection() {
     },
   ];
 
-  const articles = data?.articles || mockArticles;
+  const articles = (Array.isArray(data) ? data : mockArticles);
   const featuredArticle = articles[0];
   const secondaryArticles = articles.slice(1, 5);
 
@@ -139,7 +139,7 @@ export default function NewsSection() {
 
             {/* Secondary Articles Grid */}
             <div className="grid md:grid-cols-2 gap-x-12 gap-y-10">
-              {secondaryArticles.map((article) => (
+              {secondaryArticles.map((article: any) => (
                 <article key={article.id} className="group cursor-default">
                   <div>
                     <div className="aspect-[16/9] bg-gradient-to-br from-gray-200 to-gray-300 mb-4"></div>
