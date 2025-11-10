@@ -9,21 +9,6 @@ export interface PerformanceMetric {
   timestamp: number;
 }
 
-// Web Vitals thresholds
-const THRESHOLDS = {
-  LCP: { good: 2500, poor: 4000 }, // Largest Contentful Paint
-  FID: { good: 100, poor: 300 },   // First Input Delay
-  CLS: { good: 0.1, poor: 0.25 },  // Cumulative Layout Shift
-  FCP: { good: 1800, poor: 3000 }, // First Contentful Paint
-  TTFB: { good: 800, poor: 1800 }, // Time to First Byte
-};
-
-function getRating(value: number, thresholds: { good: number; poor: number }): 'good' | 'needs-improvement' | 'poor' {
-  if (value <= thresholds.good) return 'good';
-  if (value <= thresholds.poor) return 'needs-improvement';
-  return 'poor';
-}
-
 /**
  * Report web vitals to analytics
  */

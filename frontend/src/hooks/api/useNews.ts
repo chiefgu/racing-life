@@ -5,9 +5,9 @@ import { NewsArticle } from '@/types';
 export function useNews(filters?: Record<string, any>) {
   return useQuery<{ articles: NewsArticle[] }>({
     queryKey: ['news', filters],
-    queryFn: async () => {
+    queryFn: async (): Promise<{ articles: NewsArticle[] }> => {
       const response = await api.getNews(filters);
-      return response; // api.getNews already returns the data
+      return response as { articles: NewsArticle[] }; // api.getNews already returns the data
     },
   });
 }

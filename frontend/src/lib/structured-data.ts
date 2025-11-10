@@ -12,7 +12,7 @@ export function generateRaceStructuredData(
   url: string
 ): StructuredData {
   const raceDate = new Date(race.startTime);
-  
+
   return {
     '@context': 'https://schema.org',
     '@type': 'SportsEvent',
@@ -30,7 +30,10 @@ export function generateRaceStructuredData(
       },
     },
     sport: 'Horse Racing',
-    eventStatus: race.status === 'upcoming' ? 'https://schema.org/EventScheduled' : 'https://schema.org/EventPostponed',
+    eventStatus:
+      race.status === 'upcoming'
+        ? 'https://schema.org/EventScheduled'
+        : 'https://schema.org/EventPostponed',
     competitor: horses.map((horse) => ({
       '@type': 'Person',
       name: horse.name,
@@ -41,10 +44,7 @@ export function generateRaceStructuredData(
   };
 }
 
-export function generateArticleStructuredData(
-  article: NewsArticle,
-  url: string
-): StructuredData {
+export function generateArticleStructuredData(article: NewsArticle, url: string): StructuredData {
   return {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
@@ -116,7 +116,7 @@ export function generateAmbassadorArticleStructuredData(
 
 export function generateBookmakerStructuredData(
   bookmaker: Bookmaker,
-  url: string
+  _url: string
 ): StructuredData {
   return {
     '@context': 'https://schema.org',
@@ -183,10 +183,7 @@ export function generateOrganizationStructuredData(): StructuredData {
     description: 'Australian horse racing odds comparison and news platform',
     url: 'https://thepaddock.com.au',
     logo: 'https://thepaddock.com.au/logo.png',
-    sameAs: [
-      'https://twitter.com/thepaddockau',
-      'https://facebook.com/thepaddockau',
-    ],
+    sameAs: ['https://twitter.com/thepaddockau', 'https://facebook.com/thepaddockau'],
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Service',
