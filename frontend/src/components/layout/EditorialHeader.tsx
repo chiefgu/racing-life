@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/cn';
+import Link from 'next/link';
 
 export default function EditorialHeader() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -68,21 +69,34 @@ export default function EditorialHeader() {
             <div className="flex items-center gap-5">
               {isAuthenticated ? (
                 <>
-                  <span className="text-gray-700 font-medium cursor-default">
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-1.5 text-gray-700 hover:text-brand-primary font-medium transition-colors"
+                  >
+                    <User className="w-3.5 h-3.5" />
                     {user?.name || 'Account'}
-                  </span>
-                  <span className="text-gray-700 font-medium cursor-default">
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="text-gray-700 hover:text-brand-primary font-medium transition-colors"
+                  >
                     Dashboard
-                  </span>
+                  </Link>
                 </>
               ) : (
                 <>
-                  <span className="text-gray-700 font-medium cursor-default">
+                  <Link
+                    href="/onboarding"
+                    className="text-gray-700 hover:text-brand-primary font-medium transition-colors"
+                  >
                     Sign In
-                  </span>
-                  <span className="bg-black text-white px-4 py-1.5 text-xs font-semibold cursor-default">
+                  </Link>
+                  <Link
+                    href="/onboarding"
+                    className="bg-black hover:bg-gray-800 text-white px-4 py-1.5 text-xs font-semibold transition-colors"
+                  >
                     Subscribe
-                  </span>
+                  </Link>
                 </>
               )}
             </div>
@@ -171,23 +185,23 @@ export default function EditorialHeader() {
       </div>
 
       {/* Secondary Navigation Bar */}
-      <div className="border-t border-gray-100 bg-gray-50">
+      <div className="border-t border-brand-primary-intense bg-brand-primary">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-center justify-between h-10">
             <nav className="flex items-center gap-6 overflow-x-auto">
-              <span className="text-xs font-semibold text-gray-600 whitespace-nowrap uppercase tracking-wide cursor-default">
+              <span className="text-xs font-semibold text-white/90 hover:text-white whitespace-nowrap uppercase tracking-wide cursor-pointer transition-colors">
                 Today's Races
               </span>
-              <span className="text-xs font-semibold text-gray-600 whitespace-nowrap uppercase tracking-wide cursor-default">
+              <span className="text-xs font-semibold text-white/90 hover:text-white whitespace-nowrap uppercase tracking-wide cursor-pointer transition-colors">
                 AI Sentiment
               </span>
-              <span className="text-xs font-semibold text-gray-600 whitespace-nowrap uppercase tracking-wide cursor-default">
+              <span className="text-xs font-semibold text-white/90 hover:text-white whitespace-nowrap uppercase tracking-wide cursor-pointer transition-colors">
                 Melbourne Cup
               </span>
-              <span className="text-xs font-semibold text-gray-600 whitespace-nowrap uppercase tracking-wide cursor-default">
+              <span className="text-xs font-semibold text-white/90 hover:text-white whitespace-nowrap uppercase tracking-wide cursor-pointer transition-colors">
                 Group 1 Races
               </span>
-              <span className="text-xs font-semibold text-gray-600 whitespace-nowrap uppercase tracking-wide cursor-default">
+              <span className="text-xs font-semibold text-white/90 hover:text-white whitespace-nowrap uppercase tracking-wide cursor-pointer transition-colors">
                 Ambassadors
               </span>
             </nav>

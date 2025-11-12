@@ -1,62 +1,125 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, getUser, getAuthToken, logout as authLogout } from '@/lib/auth';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { apiClient, ApiError } from '@/lib/api-client';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  subscription_tier: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
+  token: string | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, name: string, password: string) => Promise<void>;
   logout: () => void;
-  refreshUser: () => void;
+  refreshProfile: () => Promise<void>;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const TOKEN_KEY = 'racing_life_token';
+const USER_KEY = 'racing_life_user';
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const refreshUser = () => {
-    const storedUser = getUser();
-    const token = getAuthToken();
-    
-    if (storedUser && token) {
-      setUser(storedUser);
-    } else {
-      setUser(null);
-    }
-  };
-
+  // Load user from localStorage on mount
   useEffect(() => {
-    refreshUser();
-    setIsLoading(false);
+    const storedToken = localStorage.getItem(TOKEN_KEY);
+    const storedUser = localStorage.getItem(USER_KEY);
+
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false);
   }, []);
 
-  const logout = () => {
-    authLogout();
+  const refreshProfile = useCallback(async () => {
+    if (!token) return;
+
+    try {
+      const response = await apiClient.getProfile(token);
+      setUser(response.data.user);
+      localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
+    } catch (error) {
+      console.error('Failed to refresh profile:', error);
+      throw error;
+    }
+  }, [token]);
+
+  const login = useCallback(async (email: string, password: string) => {
+    try {
+      const response = await apiClient.login({ email, password });
+      const { user: userData, token: authToken } = response.data;
+
+      setUser(userData);
+      setToken(authToken);
+      localStorage.setItem(TOKEN_KEY, authToken);
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw new Error(error.message);
+      }
+      throw new Error('Login failed');
+    }
+  }, []);
+
+  const register = useCallback(async (email: string, name: string, password: string) => {
+    try {
+      const response = await apiClient.register({ email, name, password });
+      const { user: userData, token: authToken } = response.data;
+
+      setUser(userData);
+      setToken(authToken);
+      localStorage.setItem(TOKEN_KEY, authToken);
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw new Error(error.message);
+      }
+      throw new Error('Registration failed');
+    }
+  }, []);
+
+  const logout = useCallback(() => {
     setUser(null);
-  };
+    setToken(null);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
-        isLoading,
+        token,
+        loading,
+        login,
+        register,
         logout,
-        refreshUser,
+        refreshProfile,
+        isAuthenticated: !!user && !!token,
       }}
     >
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}

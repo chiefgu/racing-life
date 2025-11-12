@@ -50,7 +50,46 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Racing specific colors
+        // Brand Color System - Atlantic-inspired with racing personality
+        brand: {
+          // Primary: Deep Navy Blue - sophisticated, authoritative (4.6:1 contrast)
+          primary: {
+            muted: 'hsl(215, 45%, 55%)',      // Soft navy
+            DEFAULT: 'hsl(215, 60%, 35%)',    // Rich navy
+            intense: 'hsl(215, 70%, 25%)',    // Deep navy
+          },
+          // Secondary: Burgundy/Wine - premium, heritage (4.5:1 contrast)
+          secondary: {
+            muted: 'hsl(350, 45%, 55%)',      // Soft burgundy
+            DEFAULT: 'hsl(350, 65%, 40%)',    // Rich burgundy
+            intense: 'hsl(350, 75%, 30%)',    // Deep burgundy
+          },
+          // Accent: Champagne Gold - celebration, winners
+          accent: {
+            muted: 'hsl(45, 60%, 65%)',       // Soft gold
+            DEFAULT: 'hsl(45, 75%, 55%)',     // Champagne gold
+            intense: 'hsl(45, 85%, 45%)',     // Rich gold
+          },
+          // Light: Minimal background tints
+          light: {
+            muted: 'hsl(210, 20%, 99%)',      // Cool off-white
+            DEFAULT: 'hsl(210, 20%, 97%)',    // Cool subtle gray
+            intense: 'hsl(210, 20%, 94%)',    // Cool light gray
+          },
+          // Dark: True blacks and near-blacks for editorial feel
+          dark: {
+            muted: 'hsl(215, 10%, 25%)',      // Navy-tinted gray
+            DEFAULT: 'hsl(215, 15%, 10%)',    // Navy-tinted near black
+            intense: 'hsl(215, 20%, 5%)',     // Navy-tinted black
+          },
+          // UI: Subtle neutral borders
+          ui: {
+            muted: 'hsl(210, 15%, 92%)',      // Very light cool gray
+            DEFAULT: 'hsl(210, 15%, 85%)',    // Light cool border
+            intense: 'hsl(210, 15%, 70%)',    // Medium cool border
+          },
+        },
+        // Legacy racing colors (kept for backwards compatibility)
         racing: {
           green: '#10b981',
           blue: '#3b82f6',
@@ -90,6 +129,10 @@ const config: Config = {
           from: { transform: "translateX(-100%)" },
           to: { transform: "translateX(0)" },
         },
+        "pulse-subtle": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.85" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -97,6 +140,7 @@ const config: Config = {
         shimmer: "shimmer 2s infinite",
         fadeIn: "fadeIn 0.5s ease-out",
         slideIn: "slideIn 0.3s ease-out",
+        "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
       },
     },
   },

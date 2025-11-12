@@ -11,6 +11,14 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 
   // Compression
@@ -39,7 +47,7 @@ const nextConfig = {
 
   // Experimental features for better performance
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Disabled - causing CSS stripping issues in Chrome
     optimizePackageImports: ['recharts', 'socket.io-client'],
   },
 

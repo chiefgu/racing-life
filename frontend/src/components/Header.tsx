@@ -14,7 +14,7 @@ function AuthButtons({ mobile = false }: { mobile?: boolean }) {
       <>
         <Link
           href="/account"
-          className={`font-medium text-gray-700 hover:text-racing-blue ${
+          className={`font-medium text-brand-dark-muted hover:text-brand-primary ${
             mobile ? 'block px-3 py-2 text-base' : 'text-sm'
           }`}
         >
@@ -22,7 +22,7 @@ function AuthButtons({ mobile = false }: { mobile?: boolean }) {
         </Link>
         <button
           onClick={logout}
-          className={`font-medium text-gray-700 hover:text-racing-blue text-left ${
+          className={`font-medium text-brand-dark-muted hover:text-brand-primary text-left ${
             mobile ? 'block px-3 py-2 text-base w-full' : 'text-sm'
           }`}
         >
@@ -36,7 +36,7 @@ function AuthButtons({ mobile = false }: { mobile?: boolean }) {
     <>
       <Link
         href="/login"
-        className={`font-medium text-gray-700 hover:text-racing-blue ${
+        className={`font-medium text-brand-dark-muted hover:text-brand-primary ${
           mobile ? 'block px-3 py-2 text-base' : 'text-sm'
         }`}
       >
@@ -44,7 +44,7 @@ function AuthButtons({ mobile = false }: { mobile?: boolean }) {
       </Link>
       <Link
         href="/register"
-        className={`inline-flex items-center justify-center border border-transparent font-medium rounded-md text-white bg-racing-blue hover:bg-racing-blue/90 ${
+        className={`inline-flex items-center justify-center border border-transparent font-medium text-white bg-brand-primary hover:bg-brand-primary-intense transition-colors ${
           mobile ? 'px-3 py-2 text-base w-full' : 'px-4 py-2 text-sm'
         }`}
       >
@@ -71,7 +71,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="bg-white border-b border-gray-300 sticky top-0 z-50 shadow-sm">
+    <header className="bg-white border-b border-brand-ui-muted sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -94,8 +94,8 @@ export default function Header() {
                 href={link.href}
                 className={`text-sm font-medium transition-colors ${
                   (link.exact ? pathname === link.href : isActive(link.href))
-                    ? 'text-racing-blue font-semibold'
-                    : 'text-gray-700 hover:text-racing-blue'
+                    ? 'text-brand-dark-intense font-semibold'
+                    : 'text-brand-dark-muted hover:text-brand-primary'
                 }`}
               >
                 {link.label}
@@ -105,12 +105,12 @@ export default function Header() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="text-gray-600 hover:text-gray-900" aria-label="Search">
+            <button className="text-brand-dark-muted hover:text-brand-primary transition-colors" aria-label="Search">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
-            <Link href="/bookmakers" className="text-sm font-medium text-racing-green hover:text-racing-green/80">
+            <Link href="/bookmakers" className="text-sm font-medium text-brand-secondary hover:text-brand-secondary-intense transition-colors">
               Free Bets
             </Link>
             <AuthButtons />
@@ -119,7 +119,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-racing-blue"
+            className="md:hidden p-2 text-brand-dark-muted hover:text-brand-primary focus:outline-none"
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -138,17 +138,17 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white">
+        <div className="md:hidden border-t border-brand-ui-muted bg-white">
           <nav className="px-2 pt-2 pb-3 space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                className={`block px-3 py-2 text-base font-medium transition-colors ${
                   (link.exact ? pathname === link.href : isActive(link.href))
-                    ? 'bg-racing-blue/10 text-racing-blue'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-racing-blue'
+                    ? 'text-brand-dark-intense font-semibold'
+                    : 'text-brand-dark-muted hover:text-brand-primary'
                 }`}
               >
                 {link.label}
@@ -157,12 +157,12 @@ export default function Header() {
             <Link
               href="/bookmakers"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium text-racing-green hover:bg-gray-100"
+              className="block px-3 py-2 text-base font-medium text-brand-secondary hover:text-brand-secondary-intense transition-colors"
             >
               Free Bets
             </Link>
           </nav>
-          <div className="pt-4 pb-3 border-t border-gray-200">
+          <div className="pt-4 pb-3 border-t border-brand-ui-muted">
             <div className="px-2 space-y-1">
               <AuthButtons mobile />
             </div>

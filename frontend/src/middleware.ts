@@ -4,8 +4,8 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow access to prelaunch page without authentication
-  if (pathname === '/prelaunch') {
+  // Allow access to prelaunch and onboarding pages without authentication
+  if (pathname === '/prelaunch' || pathname === '/onboarding') {
     return NextResponse.next();
   }
 
