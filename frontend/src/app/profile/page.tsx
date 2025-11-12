@@ -96,7 +96,7 @@ function ProfileContent() {
         }
 
         await apiClient.changePassword(
-          { currentPassword, newPassword },
+          { current_password: currentPassword, new_password: newPassword },
           token!
         );
 
