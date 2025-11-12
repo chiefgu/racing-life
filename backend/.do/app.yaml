@@ -1,0 +1,83 @@
+name: racing-life-backend
+region: nyc
+
+services:
+  - name: api
+    github:
+      repo: chiefgu/racing-life
+      branch: main
+      deploy_on_push: true
+    source_dir: /backend
+    dockerfile_path: backend/Dockerfile
+
+    # Health check configuration
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 60
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
+    # HTTP configuration
+    http_port: 3001
+
+    # Instance configuration
+    instance_count: 1
+    instance_size_slug: basic-xxs  # $5/month - 512MB RAM, 1 vCPU
+
+    # Environment variables (you'll need to set sensitive values in the DO dashboard)
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: DATABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: REDIS_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: JWT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: CORS_ORIGIN
+        value: https://frontend-nkvfdkdvh-henry-gs-projects.vercel.app
+      - key: SENTRY_DSN
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ""
+      - key: OPENAI_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ""
+      - key: THE_ODDS_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ""
+      - key: FIREBASE_PROJECT_ID
+        value: ""
+      - key: FIREBASE_PRIVATE_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: ""
+      - key: FIREBASE_CLIENT_EMAIL
+        value: ""
+
+    # Run migrations on deploy
+    run_command: npm run migrate:latest && node dist/index.js
+
+# Managed PostgreSQL database
+databases:
+  - name: racing-life-db
+    engine: PG
+    version: "16"
+    production: false  # Set to true for production (costs more)
+    cluster_name: racing-life-db-cluster
+    db_name: racing_life
+    db_user: racing_life_user
+
+# Managed Redis
+  - name: racing-life-redis
+    engine: REDIS
+    production: false  # Set to true for production (costs more)
