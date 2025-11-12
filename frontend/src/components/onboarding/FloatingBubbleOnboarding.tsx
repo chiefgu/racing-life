@@ -8,7 +8,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 import { useRouter } from 'next/navigation';
 
-type OnboardingState = 'signup' | 'welcome' | 'selectJockeys' | 'selectTrainers' | 'selectTracks' | 'selectBookmakers' | 'processing' | 'complete';
+type OnboardingState =
+  | 'signup'
+  | 'welcome'
+  | 'selectJockeys'
+  | 'selectTrainers'
+  | 'selectTracks'
+  | 'selectBookmakers'
+  | 'processing'
+  | 'complete';
 
 interface SelectableItem {
   id: string;
@@ -58,16 +66,22 @@ const BOOKMAKERS: SelectableItem[] = [
 ];
 
 // Image URLs for the orb
-const imgBackground = "/orb/background.png";
-const img = "/orb/gradient1.svg";
-const img1 = "/orb/gradient2.svg";
-const img2 = "/orb/gradient3.svg";
-const img3 = "/orb/gradient4.svg";
-const imgOuterRing = "/orb/outer-ring.svg";
-const imgGlare = "/orb/glare.svg";
+const imgBackground = '/orb/background.png';
+const img = '/orb/gradient1.svg';
+const img1 = '/orb/gradient2.svg';
+const img2 = '/orb/gradient3.svg';
+const img3 = '/orb/gradient4.svg';
+const imgOuterRing = '/orb/outer-ring.svg';
+const imgGlare = '/orb/glare.svg';
 
 // Animated Orb Component
-function AnimatedOrb({ size = 'large', energy = 0 }: { size?: 'small' | 'large' | 'xlarge' | 'success'; energy?: number }) {
+function AnimatedOrb({
+  size = 'large',
+  energy = 0,
+}: {
+  size?: 'small' | 'large' | 'xlarge' | 'success';
+  energy?: number;
+}) {
   const [prevEnergy, setPrevEnergy] = useState(energy);
   const [showBoost, setShowBoost] = useState(false);
 
@@ -83,17 +97,17 @@ function AnimatedOrb({ size = 'large', energy = 0 }: { size?: 'small' | 'large' 
   const sizeConfig = {
     small: {
       container: 'w-32 h-32',
-      baseWidth: 150.182,  // 50% of original
+      baseWidth: 150.182, // 50% of original
       bgWidth: 150.182,
     },
     large: {
       container: 'w-40 h-40',
-      baseWidth: 200.243,  // 66% of original
+      baseWidth: 200.243, // 66% of original
       bgWidth: 200.243,
     },
     xlarge: {
       container: 'w-48 h-48',
-      baseWidth: 266.103,  // original size
+      baseWidth: 266.103, // original size
       bgWidth: 300.364,
     },
     success: {
@@ -108,11 +122,11 @@ function AnimatedOrb({ size = 'large', energy = 0 }: { size?: 'small' | 'large' 
 
   // Energy-based animation parameters (0-1 scale) - MORE DRAMATIC
   const normalizedEnergy = Math.min(energy / 12, 1); // Max out at 12 selections
-  const rotationIntensity = 3 + (normalizedEnergy * 25); // 3° to 28° (much more dramatic)
-  const floatDistance = 4 + (normalizedEnergy * 20); // 4px to 24px
-  const animationSpeed = 6 - (normalizedEnergy * 4); // 6s to 2s (much faster)
+  const rotationIntensity = 3 + normalizedEnergy * 25; // 3° to 28° (much more dramatic)
+  const floatDistance = 4 + normalizedEnergy * 20; // 4px to 24px
+  const animationSpeed = 6 - normalizedEnergy * 4; // 6s to 2s (much faster)
   const glowIntensity = normalizedEnergy * 0.9; // 0 to 0.9 opacity (brighter)
-  const pulseScale = 1 + (normalizedEnergy * 0.15); // 1.0 to 1.15 scale (more noticeable)
+  const pulseScale = 1 + normalizedEnergy * 0.15; // 1.0 to 1.15 scale (more noticeable)
 
   return (
     <div className={`relative ${config.container} mx-auto`}>
@@ -134,7 +148,8 @@ function AnimatedOrb({ size = 'large', energy = 0 }: { size?: 'small' | 'large' 
               ease: 'easeInOut',
             }}
             style={{
-              background: 'radial-gradient(circle, rgba(168, 85, 247, 0.6) 0%, rgba(236, 72, 153, 0.5) 40%, rgba(59, 130, 246, 0.3) 70%, transparent 100%)',
+              background:
+                'radial-gradient(circle, rgba(168, 85, 247, 0.6) 0%, rgba(236, 72, 153, 0.5) 40%, rgba(59, 130, 246, 0.3) 70%, transparent 100%)',
             }}
           />
         )}
@@ -151,7 +166,8 @@ function AnimatedOrb({ size = 'large', energy = 0 }: { size?: 'small' | 'large' 
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
             style={{
-              background: 'radial-gradient(circle, rgba(168, 85, 247, 0.8) 0%, rgba(236, 72, 153, 0.6) 50%, transparent 70%)',
+              background:
+                'radial-gradient(circle, rgba(168, 85, 247, 0.8) 0%, rgba(236, 72, 153, 0.6) 50%, transparent 70%)',
             }}
           />
         )}
@@ -164,23 +180,23 @@ function AnimatedOrb({ size = 'large', energy = 0 }: { size?: 'small' | 'large' 
           size === 'xlarge'
             ? { rotate: 360 }
             : size === 'success'
-            ? {}
-            : {
-                rotate: [0, rotationIntensity, -rotationIntensity, 0],
-                y: [0, -floatDistance, 0, floatDistance, 0],
-                scale: [1, pulseScale, 1, pulseScale, 1],
-              }
+              ? {}
+              : {
+                  rotate: [0, rotationIntensity, -rotationIntensity, 0],
+                  y: [0, -floatDistance, 0, floatDistance, 0],
+                  scale: [1, pulseScale, 1, pulseScale, 1],
+                }
         }
         transition={
           size === 'xlarge'
             ? { rotate: { duration: 20, repeat: Infinity, ease: 'linear' } }
             : size === 'success'
-            ? {}
-            : {
-                duration: animationSpeed,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }
+              ? {}
+              : {
+                  duration: animationSpeed,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }
         }
       >
         {/* Background */}
@@ -194,7 +210,10 @@ function AnimatedOrb({ size = 'large', energy = 0 }: { size?: 'small' | 'large' 
         </div>
 
         {/* Animation gradients */}
-        <div className="absolute inset-0 overflow-clip" style={{ borderRadius: `${config.baseWidth}px` }}>
+        <div
+          className="absolute inset-0 overflow-clip"
+          style={{ borderRadius: `${config.baseWidth}px` }}
+        >
           <motion.div
             className="absolute bg-white overflow-clip top-0"
             style={{
@@ -269,15 +288,16 @@ function AnimatedOrb({ size = 'large', energy = 0 }: { size?: 'small' | 'large' 
 
         {/* Glare */}
         <div
-          className="absolute filter"
+          className="absolute"
           style={{
-            blur: `${10.32 * scaleFactor}px`,
+            filter: `blur(${10.32 * scaleFactor}px)`,
             left: `${48.71 * scaleFactor}px`,
             borderRadius: `${158.561 * scaleFactor}px`,
             width: `${168.682 * scaleFactor}px`,
             height: `${168.682 * scaleFactor}px`,
             top: `${44.65 * scaleFactor}px`,
-            backgroundImage: "url('data:image/svg+xml;utf8,<svg viewBox=\\'0 0 168.68 168.68\\' xmlns=\\'http://www.w3.org/2000/svg\\' preserveAspectRatio=\\'none\\'><rect x=\\'0\\' y=\\'0\\' height=\\'100%\\' width=\\'100%\\' fill=\\'url(%23grad)\\' opacity=\\'0.5\\'/><defs><radialGradient id=\\'grad\\' gradientUnits=\\'userSpaceOnUse\\' cx=\\'0\\' cy=\\'0\\' r=\\'10\\' gradientTransform=\\'matrix(5.1644e-16 8.4341 -8.4341 5.1644e-16 84.341 84.341)\\'><stop stop-color=\\'rgba(255,255,255,1)\\' offset=\\'0\\'/><stop stop-color=\\'rgba(255,255,255,0)\\' offset=\\'1\\'/></radialGradient></defs></svg>')",
+            backgroundImage:
+              "url('data:image/svg+xml;utf8,<svg viewBox=\\'0 0 168.68 168.68\\' xmlns=\\'http://www.w3.org/2000/svg\\' preserveAspectRatio=\\'none\\'><rect x=\\'0\\' y=\\'0\\' height=\\'100%\\' width=\\'100%\\' fill=\\'url(%23grad)\\' opacity=\\'0.5\\'/><defs><radialGradient id=\\'grad\\' gradientUnits=\\'userSpaceOnUse\\' cx=\\'0\\' cy=\\'0\\' r=\\'10\\' gradientTransform=\\'matrix(5.1644e-16 8.4341 -8.4341 5.1644e-16 84.341 84.341)\\'><stop stop-color=\\'rgba(255,255,255,1)\\' offset=\\'0\\'/><stop stop-color=\\'rgba(255,255,255,0)\\' offset=\\'1\\'/></radialGradient></defs></svg>')",
           }}
         />
 
@@ -313,7 +333,10 @@ function AnimatedOrb({ size = 'large', energy = 0 }: { size?: 'small' | 'large' 
             transition={{ delay: 0.2, type: 'spring' }}
             className="absolute inset-0 flex items-center justify-center text-white z-10"
           >
-            <Check style={{ width: `${64 * scaleFactor}px`, height: `${64 * scaleFactor}px` }} strokeWidth={3} />
+            <Check
+              style={{ width: `${64 * scaleFactor}px`, height: `${64 * scaleFactor}px` }}
+              strokeWidth={3}
+            />
           </motion.div>
         )}
       </motion.div>
@@ -324,10 +347,15 @@ function AnimatedOrb({ size = 'large', energy = 0 }: { size?: 'small' | 'large' 
 // Signup Screen
 function SignupScreen({
   onNext,
-  onRegister
+  onRegister,
 }: {
   onNext: (data: { firstName: string; lastName: string; email: string; password: string }) => void;
-  onRegister: (firstName: string, lastName: string, email: string, password: string) => Promise<void>;
+  onRegister: (
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string
+  ) => Promise<void>;
 }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -363,7 +391,8 @@ function SignupScreen({
         await onRegister(firstName, lastName, email, password);
         onNext({ firstName, lastName, email, password });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Registration failed. Please try again.';
+        const message =
+          error instanceof Error ? error.message : 'Registration failed. Please try again.';
         setGeneralError(message);
       } finally {
         setLoading(false);
@@ -463,9 +492,7 @@ function SignupScreen({
                     : 'border-gray-300 focus:border-brand-primary focus:ring-1 focus:ring-brand-primary'
                 }`}
               />
-              {passwordError && (
-                <p className="text-xs text-red-600 mt-1">{passwordError}</p>
-              )}
+              {passwordError && <p className="text-xs text-red-600 mt-1">{passwordError}</p>}
             </div>
 
             {/* reCAPTCHA */}
@@ -497,7 +524,10 @@ function SignupScreen({
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{' '}
-              <a href="/" className="text-brand-primary hover:text-brand-primary-intense font-semibold">
+              <a
+                href="/"
+                className="text-brand-primary hover:text-brand-primary-intense font-semibold"
+              >
                 Sign In
               </a>
             </p>
@@ -557,7 +587,7 @@ function SelectionScreen({
 }) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredItems = items.filter(item =>
+  const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -601,16 +631,19 @@ function SelectionScreen({
                   className={`
                     py-3 px-5 rounded-full font-medium text-base
                     transition-all duration-200 text-center
-                    ${isSelected
-                      ? 'bg-brand-primary text-white shadow-lg'
-                      : 'bg-white text-gray-800 border-2 border-gray-200 hover:border-brand-primary'
+                    ${
+                      isSelected
+                        ? 'bg-brand-primary text-white shadow-lg'
+                        : 'bg-white text-gray-800 border-2 border-gray-200 hover:border-brand-primary'
                     }
                   `}
                 >
                   <div className="flex flex-col items-center">
                     <span className="font-semibold">{item.name}</span>
                     {item.stats && (
-                      <span className={`text-xs mt-0.5 ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
+                      <span
+                        className={`text-xs mt-0.5 ${isSelected ? 'text-white/80' : 'text-gray-500'}`}
+                      >
                         {item.stats}
                       </span>
                     )}
@@ -686,7 +719,7 @@ function ProcessingScreen({ totalEnergy }: { totalEnergy: number }) {
 function CompletionScreen({
   onGoToDashboard,
   totalEnergy,
-  saving
+  saving,
 }: {
   onGoToDashboard: () => void;
   totalEnergy: number;
@@ -718,7 +751,12 @@ function CompletionScreen({
 // Main Component
 export default function FloatingBubbleOnboarding() {
   const [state, setState] = useState<OnboardingState>('signup');
-  const [_signupData, setSignupData] = useState({ firstName: '', lastName: '', email: '', password: '' });
+  const [_signupData, setSignupData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+  });
   const [selectedJockeys, setSelectedJockeys] = useState<string[]>([]);
   const [selectedTrainers, setSelectedTrainers] = useState<string[]>([]);
   const [selectedTracks, setSelectedTracks] = useState<string[]>([]);
@@ -728,7 +766,10 @@ export default function FloatingBubbleOnboarding() {
   const { register, token } = useAuth();
   const router = useRouter();
 
-  const toggleSelection = (category: 'jockeys' | 'trainers' | 'tracks' | 'bookmakers', id: string) => {
+  const toggleSelection = (
+    category: 'jockeys' | 'trainers' | 'tracks' | 'bookmakers',
+    id: string
+  ) => {
     const setters = {
       jockeys: setSelectedJockeys,
       trainers: setSelectedTrainers,
@@ -768,12 +809,22 @@ export default function FloatingBubbleOnboarding() {
     setState(prevState);
   };
 
-  const handleRegister = async (firstName: string, lastName: string, email: string, password: string) => {
+  const handleRegister = async (
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string
+  ) => {
     const name = `${firstName} ${lastName}`;
     await register(email, name, password);
   };
 
-  const handleSignupSubmit = (data: { firstName: string; lastName: string; email: string; password: string }) => {
+  const handleSignupSubmit = (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }) => {
     setSignupData(data);
     setState('welcome');
   };
@@ -784,10 +835,18 @@ export default function FloatingBubbleOnboarding() {
       setSavingFavourites(true);
       try {
         // Convert selected IDs to names for backend storage
-        const jockeyNames = selectedJockeys.map(id => JOCKEYS.find(j => j.id === id)?.name).filter(Boolean) as string[];
-        const trainerNames = selectedTrainers.map(id => TRAINERS.find(t => t.id === id)?.name).filter(Boolean) as string[];
-        const trackNames = selectedTracks.map(id => TRACKS.find(t => t.id === id)?.name).filter(Boolean) as string[];
-        const bookmakerNames = selectedBookmakers.map(id => BOOKMAKERS.find(b => b.id === id)?.name).filter(Boolean) as string[];
+        const jockeyNames = selectedJockeys
+          .map((id) => JOCKEYS.find((j) => j.id === id)?.name)
+          .filter(Boolean) as string[];
+        const trainerNames = selectedTrainers
+          .map((id) => TRAINERS.find((t) => t.id === id)?.name)
+          .filter(Boolean) as string[];
+        const trackNames = selectedTracks
+          .map((id) => TRACKS.find((t) => t.id === id)?.name)
+          .filter(Boolean) as string[];
+        const bookmakerNames = selectedBookmakers
+          .map((id) => BOOKMAKERS.find((b) => b.id === id)?.name)
+          .filter(Boolean) as string[];
 
         await apiClient.saveFavourites(
           {
@@ -815,7 +874,11 @@ export default function FloatingBubbleOnboarding() {
   };
 
   // Calculate total energy from all selections
-  const totalEnergy = selectedJockeys.length + selectedTrainers.length + selectedTracks.length + selectedBookmakers.length;
+  const totalEnergy =
+    selectedJockeys.length +
+    selectedTrainers.length +
+    selectedTracks.length +
+    selectedBookmakers.length;
 
   return (
     <main className="relative w-full h-screen bg-white overflow-hidden">
@@ -955,7 +1018,11 @@ export default function FloatingBubbleOnboarding() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <CompletionScreen onGoToDashboard={handleGoToDashboard} totalEnergy={totalEnergy} saving={savingFavourites} />
+            <CompletionScreen
+              onGoToDashboard={handleGoToDashboard}
+              totalEnergy={totalEnergy}
+              saving={savingFavourites}
+            />
           </motion.div>
         )}
       </AnimatePresence>
