@@ -391,8 +391,13 @@ function SignupScreen({
         await onRegister(firstName, lastName, email, password);
         onNext({ firstName, lastName, email, password });
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : 'Registration failed. Please try again.';
+        console.error('Registration error:', error);
+        let message = 'Registration failed. Please try again.';
+        if (error instanceof Error) {
+          message = error.message;
+        } else if (typeof error === 'object' && error !== null && 'message' in error) {
+          message = String((error as { message: unknown }).message);
+        }
         setGeneralError(message);
       } finally {
         setLoading(false);
