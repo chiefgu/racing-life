@@ -8,7 +8,8 @@ services:
       branch: main
       deploy_on_push: true
     source_dir: /backend
-    dockerfile_path: backend/Dockerfile
+    dockerfile_path: Dockerfile
+    build_command: ""  # Empty to use Dockerfile instead of buildpack
 
     # Health check configuration
     health_check:
