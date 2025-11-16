@@ -1,9 +1,8 @@
 'use client';
 
-import { ArrowRight } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 function CountdownTimer({ targetTime }: { targetTime: Date }) {
   const [timeLeft, setTimeLeft] = useState<string>('');
@@ -40,55 +39,7 @@ function CountdownTimer({ targetTime }: { targetTime: Date }) {
   return <span>{timeLeft}</span>;
 }
 
-const carouselContent = [
-  {
-    id: 'odds-comparison',
-    label: 'Live Odds',
-    headline: "Compare Live Odds from Australia's Top Bookmakers",
-    subheadline: 'Never miss the best price. Updated every second.',
-    description:
-      'TAB, Sportsbet, Ladbrokes, Neds and more—all in one place. Our odds update every second so you always get the best value.',
-    stats: [
-      { value: '10+', label: 'Bookmakers' },
-      { value: 'Live', label: 'Real-Time' },
-    ],
-    color: 'brand-primary',
-  },
-  {
-    id: 'ai-analyst',
-    label: 'AI Analyst',
-    headline: 'AI-Powered Analysis Personalised to Your Racing Favourites',
-    subheadline: 'Your personal racing analyst, working 24/7',
-    description:
-      'Get personalised tips and analysis for your favourite jockeys, trainers and tracks. Our AI tracks news sentiment and form to give you an edge.',
-    stats: [
-      { value: 'AI', label: 'Powered Insights' },
-      { value: '24/7', label: 'Analysis' },
-    ],
-    color: 'brand-accent-intense',
-  },
-  {
-    id: 'ambassadors',
-    label: 'Ambassadors',
-    headline: "Expert Tips from Australia's Top Racing Minds",
-    subheadline: 'Decades of racing experience at your fingertips',
-    description:
-      'Our ambassadors bring insider knowledge and exclusive tips. Get track insights, form analysis, and winning strategies from the pros.',
-    stats: [
-      { value: '5+', label: 'Racing Experts' },
-      { value: 'Daily', label: 'Insights' },
-    ],
-    color: 'brand-secondary',
-  },
-];
-
-export default function HeroSection() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const [hasViewedAll, setHasViewedAll] = useState(false);
-  const [viewedCards, setViewedCards] = useState<Set<number>>(new Set([0]));
-  const isScrollingRef = useRef(false);
-
+export default function HeroSectionSplit() {
   // Create target times (using today's date with specific times)
   const now = new Date();
 
@@ -104,215 +55,115 @@ export default function HeroSection() {
   race3Time.setHours(15, 20, 0, 0); // 3:20 PM
   if (race3Time < now) race3Time.setDate(race3Time.getDate() + 1);
 
-  // Check if all cards have been viewed
-  useEffect(() => {
-    if (viewedCards.size === carouselContent.length) {
-      setHasViewedAll(true);
-    }
-  }, [viewedCards]);
-
-  // Lock scroll until all cards viewed
-  useEffect(() => {
-    if (!hasViewedAll) {
-      // Prevent body scroll
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-    } else {
-      // Re-enable scroll
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-    };
-  }, [hasViewedAll]);
-
-  // Handle scroll-based navigation
-  useEffect(() => {
-    if (hasViewedAll) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-
-      if (isScrollingRef.current) return;
-
-      isScrollingRef.current = true;
-
-      if (e.deltaY > 0) {
-        // Scrolling down - next card
-        setActiveIndex((prev) => {
-          const next = Math.min(prev + 1, carouselContent.length - 1);
-          if (next !== prev) {
-            setDirection(1);
-            setViewedCards((viewed) => new Set(viewed).add(next));
-          }
-          return next;
-        });
-      } else if (e.deltaY < 0) {
-        // Scrolling up - previous card
-        setActiveIndex((prev) => {
-          const next = Math.max(prev - 1, 0);
-          if (next !== prev) {
-            setDirection(-1);
-          }
-          return next;
-        });
-      }
-
-      setTimeout(() => {
-        isScrollingRef.current = false;
-      }, 1500);
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    return () => window.removeEventListener('wheel', handleWheel);
-  }, [hasViewedAll]);
-
-  const handleLabelClick = (index: number) => {
-    setDirection(index > activeIndex ? 1 : -1);
-    setActiveIndex(index);
-    setViewedCards((viewed) => new Set(viewed).add(index));
-  };
-
-  const activeContent = carouselContent[activeIndex];
-
   return (
     <section className="bg-white">
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Main Hero Area */}
-        <div className="py-16 border-b border-brand-ui-muted">
+        <div className="py-12 border-b border-brand-ui-muted">
           <div className="grid lg:grid-cols-[2fr,1fr] gap-12">
-            {/* Featured Content */}
-            <div className="flex flex-col justify-between min-w-0">
-              <div>
-                {/* Carousel Navigation Labels */}
-                <div className="flex justify-start gap-3 mb-8">
-                  {carouselContent.map((content, index) => (
-                    <button
-                      key={content.id}
-                      onClick={() => handleLabelClick(index)}
-                      className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all border-2 ${
-                        activeIndex === index
-                          ? `border-${content.color} text-${content.color} bg-brand-light-muted`
-                          : 'border-brand-ui-muted text-brand-dark-muted hover:border-brand-ui-intense'
-                      }`}
-                    >
-                      {content.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Animated Carousel Card */}
-                <div className="relative overflow-hidden mb-12" style={{ minHeight: '500px' }}>
-                  <AnimatePresence mode="wait" custom={direction}>
-                    <motion.div
-                      key={activeContent.id}
-                      custom={direction}
-                      initial={{ x: direction > 0 ? 1000 : -1000, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      exit={{ x: direction > 0 ? -1000 : 1000, opacity: 0 }}
-                      transition={{
-                        x: { type: 'spring', stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 },
-                      }}
-                      className={`border-l-4 border-${activeContent.color} bg-brand-light-muted p-12`}
-                    >
-                      {/* Main Headline */}
-                      <h1 className="text-6xl lg:text-7xl font-serif font-bold text-brand-dark-intense mb-6 leading-[1.1] tracking-tight">
-                        {activeContent.headline}
-                      </h1>
-
-                      <p className="text-2xl text-brand-dark-muted leading-relaxed mb-10 max-w-2xl font-light">
-                        {activeContent.subheadline}
-                      </p>
-
-                      {/* Stats */}
-                      <div className="flex items-start gap-12 mb-8">
-                        {activeContent.stats.map((stat, idx) => (
-                          <div key={idx}>
-                            <div
-                              className={`text-7xl font-serif font-bold text-${activeContent.color} mb-2`}
-                            >
-                              {stat.value}
-                            </div>
-                            <div className="text-xs font-semibold text-brand-dark-intense uppercase tracking-wider">
-                              {stat.label}
-                            </div>
-                          </div>
-                        ))}
+            {/* Left: News-style Layout */}
+            <div>
+              {/* Main Featured Story */}
+              <div className="mb-8 pb-8 border-b border-brand-ui">
+                <div className="grid md:grid-cols-[1fr,1.5fr] gap-6">
+                  <div className="aspect-[4/3] bg-brand-light-intense overflow-hidden">
+                    <Image
+                      src="/melbourne-cup.jpg"
+                      alt="Melbourne Cup"
+                      width={600}
+                      height={450}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <div className="text-xs font-bold text-brand-primary uppercase tracking-wider mb-3">
+                      Featured Story
+                    </div>
+                    <h1 className="text-4xl lg:text-5xl font-serif font-bold text-brand-dark-intense mb-4 leading-tight hover:text-brand-primary transition-colors cursor-pointer">
+                      Melbourne Cup 2025: Dark Horses Set to Upset Favourites
+                    </h1>
+                    <p className="text-lg text-brand-dark-muted leading-relaxed mb-4">
+                      Our analysts break down the overlooked contenders that could deliver serious
+                      returns in this year's race that stops a nation.
+                    </p>
+                    <div className="flex items-center gap-3 text-sm text-brand-dark-muted">
+                      <div className="w-8 h-8 rounded-full bg-brand-light-intense overflow-hidden">
+                        <Image
+                          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
+                          alt="Sarah Mitchell"
+                          width={32}
+                          height={32}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-
-                      {/* Description */}
-                      <p className="text-lg text-brand-dark-muted leading-relaxed max-w-2xl mb-8">
-                        {activeContent.description}
-                      </p>
-
-                      {/* Progress indicator */}
-                      <div className="flex gap-2 mt-8">
-                        {carouselContent.map((_, idx) => (
-                          <div
-                            key={idx}
-                            className={`h-1 flex-1 transition-all ${
-                              idx === activeIndex
-                                ? `bg-${activeContent.color}`
-                                : 'bg-brand-ui-muted'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
+                      <span className="font-medium">Sarah Mitchell</span>
+                      <span>·</span>
+                      <span>2 hours ago</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Featured Blog Post */}
-              <div className="pt-8 border-t border-brand-ui mt-12">
-                <div className="block">
-                  <div className="flex gap-6">
-                    <div className="w-36 h-36 bg-brand-light-intense flex-shrink-0 overflow-hidden rounded-md">
-                      <Image
-                        src="/melbourne-cup.jpg"
-                        alt="Melbourne Cup race course"
-                        width={144}
-                        height={144}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-xs font-semibold text-brand-accent-intense uppercase tracking-wider mb-2">
-                        Expert Analysis
-                      </div>
-                      <h3 className="text-xl font-serif font-bold text-brand-dark-intense mb-2 leading-tight hover:text-brand-primary transition-colors cursor-pointer">
-                        Melbourne Cup 2025: Dark Horses and Value Bets to Watch
-                      </h3>
-                      <p className="text-sm text-brand-dark-muted leading-relaxed line-clamp-2 mb-3">
-                        Our racing analysts break down the field and identify the overlooked
-                        contenders that could deliver serious returns this year.
-                      </p>
-                      <div className="flex items-center gap-2 text-sm text-brand-dark-muted">
-                        <div className="w-6 h-6 rounded-full bg-brand-light-intense flex-shrink-0 overflow-hidden">
-                          <Image
-                            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
-                            alt="Sarah Mitchell"
-                            width={24}
-                            height={24}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <span className="font-medium">Sarah Mitchell</span>
-                      </div>
-                    </div>
+              {/* Secondary Stories Grid */}
+              <div className="grid md:grid-cols-3 gap-6">
+                {/* Story 1 - Next to Jump */}
+                <div className="border-l-4 border-brand-primary pl-4">
+                  <div className="text-xs font-bold text-brand-primary uppercase tracking-wider mb-2">
+                    Next to Jump
+                  </div>
+                  <h3 className="text-xl font-serif font-bold text-brand-dark-intense mb-2 leading-tight hover:text-brand-primary transition-colors cursor-pointer">
+                    Thunder Bolt Firm Favourite at Flemington
+                  </h3>
+                  <p className="text-sm text-brand-dark-muted mb-3 line-clamp-2">
+                    Race 4 jumps in{' '}
+                    <span className="font-bold text-brand-primary">
+                      <CountdownTimer targetTime={race1Time} />
+                    </span>
+                    . Best odds $3.50 at Sportsbet.
+                  </p>
+                  <div className="text-xs text-brand-dark-muted">1400m · Good 4 · 12 runners</div>
+                </div>
+
+                {/* Story 2 - Odds Movement */}
+                <div className="border-l-4 border-green-600 pl-4">
+                  <div className="text-xs font-bold text-green-600 uppercase tracking-wider mb-2">
+                    Market Mover
+                  </div>
+                  <h3 className="text-xl font-serif font-bold text-brand-dark-intense mb-2 leading-tight hover:text-brand-primary transition-colors cursor-pointer">
+                    Lightning Strike Backed In Heavily
+                  </h3>
+                  <p className="text-sm text-brand-dark-muted mb-3">
+                    Randwick runner has firmed from $5.20 to $4.20 in the last hour on strong money.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm line-through text-brand-dark-muted">$5.20</span>
+                    <span className="text-lg font-bold text-green-600">$4.20</span>
+                  </div>
+                </div>
+
+                {/* Story 3 - Analysis */}
+                <div className="border-l-4 border-brand-accent-intense pl-4">
+                  <div className="text-xs font-bold text-brand-accent-intense uppercase tracking-wider mb-2">
+                    Expert Analysis
+                  </div>
+                  <h3 className="text-xl font-serif font-bold text-brand-dark-intense mb-2 leading-tight hover:text-brand-primary transition-colors cursor-pointer">
+                    Jockey Form Guide: Who's Hot This Week
+                  </h3>
+                  <p className="text-sm text-brand-dark-muted mb-3 line-clamp-2">
+                    J. Smith continues dominant run with three wins from five starts. Our AI
+                    analysis reveals key trends.
+                  </p>
+                  <div className="text-xs text-brand-dark-muted">
+                    By Tom Richardson · 4 hours ago
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Sidebar Content */}
-            <div className="hidden lg:block min-w-0">
+            {/* Right: Advertisement Banner */}
+            <div className="hidden lg:block">
               <div className="sticky top-24">
-                <div className="partner-showcase border border-brand-ui-muted bg-brand-light-muted overflow-hidden h-[600px]">
+                <div className="border border-brand-ui-muted bg-brand-light-muted overflow-hidden h-[600px]">
                   <div className="h-full p-8 flex flex-col items-center justify-center">
                     <div className="text-center space-y-4">
                       <div className="w-16 h-16 bg-brand-dark-intense mx-auto mb-6 flex items-center justify-center">
@@ -331,7 +182,9 @@ export default function HeroSection() {
             </div>
           </div>
         </div>
+      </div>
 
+      <div className="max-w-[1400px] mx-auto px-6">
         {/* Live Odds Strip */}
         <div className="py-8 border-b border-brand-ui-muted">
           <div className="flex items-center justify-between mb-6">

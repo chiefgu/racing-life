@@ -2,7 +2,7 @@
 
 import EditorialHeader from '@/components/layout/EditorialHeader';
 import ModernFooter from '@/components/layout/ModernFooter';
-import HeroSection from '@/components/home/HeroSection';
+import HeroSectionSplit from '@/components/home/HeroSectionSplit';
 import LiveRacesSection from '@/components/home/LiveRacesSection';
 import NewsSection from '@/components/home/NewsSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
@@ -14,7 +14,7 @@ export default function HomeClient() {
     <div className="flex flex-col min-h-screen">
       <EditorialHeader />
       <main className="flex-1">
-        <HeroSection />
+        <HeroSectionSplit />
         <LiveRacesSection />
         <NewsSection />
         <FeaturesSection />

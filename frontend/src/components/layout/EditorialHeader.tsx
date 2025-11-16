@@ -44,15 +44,17 @@ export default function EditorialHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 bg-white border-b transition-shadow duration-200",
-        isScrolled ? "shadow-sm border-gray-200" : "border-gray-100"
+        'sticky top-0 z-50 bg-white border-b transition-shadow duration-200',
+        isScrolled ? 'shadow-sm border-gray-200' : 'border-gray-100'
       )}
     >
       {/* Top Bar */}
-      <div className={cn(
-        "border-b border-gray-100 transition-all duration-300 overflow-hidden",
-        showTopBar ? "max-h-12 opacity-100" : "max-h-0 opacity-0"
-      )}>
+      <div
+        className={cn(
+          'border-b border-gray-100 transition-all duration-300 overflow-hidden',
+          showTopBar ? 'max-h-12 opacity-100' : 'max-h-0 opacity-0'
+        )}
+      >
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-center justify-between h-12 text-xs">
             {/* Left: Today's Date */}
@@ -61,7 +63,7 @@ export default function EditorialHeader() {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                day: 'numeric',
               })}
             </div>
 
@@ -107,11 +109,13 @@ export default function EditorialHeader() {
       {/* Main Navigation */}
       <div className="max-w-[1400px] mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-
           {/* Left: Logo */}
-          <span className="text-2xl font-serif font-bold text-black tracking-tight cursor-default">
+          <Link
+            href="/"
+            className="text-2xl font-serif font-bold text-black tracking-tight hover:text-brand-primary transition-colors"
+          >
             Racing Life
-          </span>
+          </Link>
 
           {/* Right: Navigation + Search */}
           <div className="flex items-center gap-8">
@@ -139,10 +143,12 @@ export default function EditorialHeader() {
                   className="flex items-center gap-1 text-sm font-medium text-gray-900 hover:text-black transition-colors"
                 >
                   More
-                  <ChevronDown className={cn(
-                    "w-4 h-4 transition-transform",
-                    activeDropdown === 'more' && "rotate-180"
-                  )} />
+                  <ChevronDown
+                    className={cn(
+                      'w-4 h-4 transition-transform',
+                      activeDropdown === 'more' && 'rotate-180'
+                    )}
+                  />
                 </button>
 
                 {activeDropdown === 'more' && (
@@ -217,32 +223,22 @@ export default function EditorialHeader() {
             className="flex items-center justify-between w-full text-sm font-medium text-gray-900"
           >
             <span>Menu</span>
-            <ChevronDown className={cn(
-              "w-4 h-4 transition-transform",
-              activeDropdown === 'mobile' && "rotate-180"
-            )} />
+            <ChevronDown
+              className={cn(
+                'w-4 h-4 transition-transform',
+                activeDropdown === 'mobile' && 'rotate-180'
+              )}
+            />
           </button>
 
           {activeDropdown === 'mobile' && (
             <nav className="mt-3 space-y-1 border-t border-gray-100 pt-3">
-              <span className="block py-2 text-sm text-gray-900 cursor-default">
-                Races
-              </span>
-              <span className="block py-2 text-sm text-gray-900 cursor-default">
-                Odds
-              </span>
-              <span className="block py-2 text-sm text-gray-900 cursor-default">
-                News
-              </span>
-              <span className="block py-2 text-sm text-gray-900 cursor-default">
-                Insights
-              </span>
-              <span className="block py-2 text-sm text-gray-900 cursor-default">
-                Form Guides
-              </span>
-              <span className="block py-2 text-sm text-gray-900 cursor-default">
-                Results
-              </span>
+              <span className="block py-2 text-sm text-gray-900 cursor-default">Races</span>
+              <span className="block py-2 text-sm text-gray-900 cursor-default">Odds</span>
+              <span className="block py-2 text-sm text-gray-900 cursor-default">News</span>
+              <span className="block py-2 text-sm text-gray-900 cursor-default">Insights</span>
+              <span className="block py-2 text-sm text-gray-900 cursor-default">Form Guides</span>
+              <span className="block py-2 text-sm text-gray-900 cursor-default">Results</span>
             </nav>
           )}
         </div>
