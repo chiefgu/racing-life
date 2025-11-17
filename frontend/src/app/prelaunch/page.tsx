@@ -57,23 +57,23 @@ export default function PrelaunchPage() {
         </div>
 
         {/* Secondary Navigation Bar */}
-        <div className="border-t border-brand-navy/20 bg-brand-navy">
+        <div className="border-t border-gray-200 bg-brand-navy">
           <div className="max-w-[1400px] mx-auto px-6">
             <div className="flex items-center h-10">
               <div className="flex items-center gap-6 overflow-x-auto">
-                <span className="text-xs font-semibold text-white/70 whitespace-nowrap uppercase tracking-wide">
+                <span className="text-xs font-semibold text-gray-300 whitespace-nowrap uppercase tracking-wide">
                   Odds Comparison
                 </span>
-                <span className="text-xs font-semibold text-white/70 whitespace-nowrap uppercase tracking-wide">
+                <span className="text-xs font-semibold text-gray-300 whitespace-nowrap uppercase tracking-wide">
                   Expert Analysis
                 </span>
-                <span className="text-xs font-semibold text-white/70 whitespace-nowrap uppercase tracking-wide">
+                <span className="text-xs font-semibold text-gray-300 whitespace-nowrap uppercase tracking-wide">
                   AI Sentiment
                 </span>
-                <span className="text-xs font-semibold text-white/70 whitespace-nowrap uppercase tracking-wide">
+                <span className="text-xs font-semibold text-gray-300 whitespace-nowrap uppercase tracking-wide">
                   Race Coverage
                 </span>
-                <span className="text-xs font-semibold text-white/70 whitespace-nowrap uppercase tracking-wide">
+                <span className="text-xs font-semibold text-gray-300 whitespace-nowrap uppercase tracking-wide">
                   Market Updates
                 </span>
               </div>
