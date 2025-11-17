@@ -55,7 +55,7 @@
     @apply border-border;
   }
   html {
-    background-color: hsl(215, 60%, 35%);
+    background-color: #ffffff;
   }
   body {
     @apply bg-background text-foreground;
