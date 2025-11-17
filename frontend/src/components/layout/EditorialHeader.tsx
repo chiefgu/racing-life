@@ -65,7 +65,7 @@ export default function EditorialHeader() {
           showTopBar ? 'max-h-12 opacity-100' : 'max-h-0 opacity-0'
         )}
       >
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-center justify-between h-12 text-xs">
             {/* Left: Today's Date */}
             <div className="text-gray-500 font-medium truncate flex-shrink min-w-0">
@@ -191,7 +191,7 @@ export default function EditorialHeader() {
             {/* Search Icon */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2 text-gray-700 hover:text-black transition-colors"
+              className="flex items-center justify-center p-2 text-gray-700 hover:text-black transition-colors"
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
