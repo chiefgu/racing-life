@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import AnimatedOrb from '@/components/shared/AnimatedOrb';
 import { Shimmer } from '@/components/ui/Shimmer';
