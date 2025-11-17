@@ -97,7 +97,7 @@ export default function EditorialHeader() {
                     href="/onboarding"
                     className="bg-black hover:bg-gray-800 text-white px-4 py-1.5 text-xs font-semibold transition-colors"
                   >
-                    Subscribe
+                    Sign Up
                   </Link>
                 </>
               )}
@@ -199,16 +199,16 @@ export default function EditorialHeader() {
                 Today's Races
               </span>
               <span className="text-xs font-semibold text-white/90 hover:text-white whitespace-nowrap uppercase tracking-wide cursor-pointer transition-colors">
-                AI Sentiment
+                Live Odds
               </span>
               <span className="text-xs font-semibold text-white/90 hover:text-white whitespace-nowrap uppercase tracking-wide cursor-pointer transition-colors">
-                Melbourne Cup
+                AI Racing Analyst
               </span>
               <span className="text-xs font-semibold text-white/90 hover:text-white whitespace-nowrap uppercase tracking-wide cursor-pointer transition-colors">
-                Group 1 Races
+                Form Guides
               </span>
               <span className="text-xs font-semibold text-white/90 hover:text-white whitespace-nowrap uppercase tracking-wide cursor-pointer transition-colors">
-                Ambassadors
+                Race Results
               </span>
             </nav>
           </div>
