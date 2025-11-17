@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     initialScale: 1,
     maximumScale: 5,
   },
-  themeColor: '#24508F',
+  themeColor: '#ffffff',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
