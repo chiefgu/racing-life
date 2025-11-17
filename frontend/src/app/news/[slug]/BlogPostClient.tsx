@@ -9,6 +9,7 @@ import AuthorBio from '@/components/blog/AuthorBio';
 import SocialShare from '@/components/blog/SocialShare';
 import Comments from '@/components/blog/Comments';
 import NewsletterSignup from '@/components/blog/NewsletterSignup';
+import AdSpace from '@/components/blog/AdSpace';
 import { useNewsArticle } from '@/hooks/api/useNews';
 
 interface BlogPostClientProps {
@@ -37,8 +38,10 @@ The weather forecast for Cup day remains a key factor, with light rain predicted
 
 Chief rival Winx Jr, trained by Gai Waterhouse, worked shortly after Thunder Bolt and also put in a solid performance. The mare's connections remain confident despite her longer odds, citing her proven ability to handle wet conditions as a potential advantage.`,
     author: 'Sarah Mitchell',
-    authorImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
-    authorBio: 'Senior racing journalist with over 15 years covering Australian thoroughbred racing. Former editor of Australian Racing Monthly.',
+    authorImage:
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
+    authorBio:
+      'Senior racing journalist with over 15 years covering Australian thoroughbred racing. Former editor of Australian Racing Monthly.',
     authorSocial: {
       twitter: 'https://twitter.com',
       linkedin: 'https://linkedin.com',
@@ -98,14 +101,24 @@ Chief rival Winx Jr, trained by Gai Waterhouse, worked shortly after Thunder Bol
               {/* Hero Section */}
               <BlogPostHero article={displayArticle} />
 
+              {/* Mobile Ad 1 - After Hero */}
+              <div className="lg:hidden mt-8">
+                <AdSpace size="320x100" />
+              </div>
+
               {/* Article Content */}
               <div className="mt-8">
                 <BlogPostContent article={displayArticle} />
               </div>
 
-              {/* Mobile: Interspersed Sidebar Content */}
-              <div className="lg:hidden my-12 space-y-8">
-                <BlogPostSidebar article={displayArticle} isMobile />
+              {/* Mobile Ad 2 - After Content */}
+              <div className="lg:hidden mt-12">
+                <AdSpace size="300x250" />
+              </div>
+
+              {/* Mobile Ad 3 - Before Author Bio */}
+              <div className="lg:hidden mt-12">
+                <AdSpace size="300x250" />
               </div>
 
               {/* Author Bio */}

@@ -59,8 +59,8 @@ export default function BlogPostSidebar({ article }: BlogPostSidebarProps) {
         </div>
       </div>
 
-      {/* Next Races Widget */}
-      <div className="bg-white border-2 border-gray-200 p-6">
+      {/* Next Races Widget - Hidden on mobile */}
+      <div className="hidden lg:block bg-white border-2 border-gray-200 p-6">
         <h3 className="text-lg font-serif font-bold text-gray-900 mb-4 flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-brand-primary" />
           Next Races
