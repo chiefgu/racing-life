@@ -31,6 +31,7 @@ import adminRouter from './routes/admin.routes';
 import metricsRouter from './routes/metrics.routes';
 import marketMoversRouter from './routes/market-movers.routes';
 import featuredContentRouter from './routes/featured-content.routes';
+import searchRouter from './routes/search';
 
 dotenv.config();
 
@@ -138,6 +139,7 @@ app.use('/api/articles', articlesRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/market-movers', marketMoversRouter);
 app.use('/api/featured-content', featuredContentRouter);
+app.use('/api/search', searchRouter);
 
 // 404 handler
 app.use(notFoundHandler);

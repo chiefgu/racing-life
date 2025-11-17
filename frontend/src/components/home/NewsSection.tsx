@@ -3,6 +3,7 @@
 import { useNews } from '@/hooks/api/useNews';
 import { format } from 'date-fns';
 import Image from 'next/image';
+import Link from 'next/link';
 import AnimatedOrb from '@/components/shared/AnimatedOrb';
 
 export default function NewsSection() {
@@ -132,7 +133,7 @@ export default function NewsSection() {
         ) : (
           <div>
             {/* Featured Article */}
-            <div className="group cursor-default mb-12 pb-12 border-b border-gray-200">
+            <Link href={`/news/${featuredArticle.id}`} className="group cursor-pointer mb-12 pb-12 border-b border-gray-200 block hover:bg-gray-50 transition-colors -mx-6 px-6">
               <div className="grid lg:grid-cols-[2fr,1fr] gap-12">
                 <div>
                   <div className="flex items-center gap-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
@@ -178,14 +179,14 @@ export default function NewsSection() {
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Secondary Grid - Consistent 3-column grid for both rows */}
             <div className="space-y-8">
               {/* Row 1: 2 Articles + AI Analyst */}
               <div className="grid lg:grid-cols-3 gap-8">
                 {secondaryArticles.slice(0, 2).map((article: any) => (
-                  <article key={article.id} className="group cursor-default">
+                  <Link href={`/news/${article.id}`} key={article.id} className="group cursor-pointer block hover:bg-gray-50 transition-colors -mx-4 px-4 -my-4 py-4">
                     <div>
                       <div className="aspect-[16/9] mb-4 overflow-hidden">
                         <Image
@@ -224,7 +225,7 @@ export default function NewsSection() {
                         <time>{format(new Date(article.publishedAt), 'MMM d')}</time>
                       </div>
                     </div>
-                  </article>
+                  </Link>
                 ))}
 
                 {/* AI Analyst Builder */}

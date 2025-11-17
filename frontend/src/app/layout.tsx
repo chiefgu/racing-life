@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     initialScale: 1,
     maximumScale: 5,
   },
-  themeColor: '#3b82f6',
+  themeColor: '#1e3a5f',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',

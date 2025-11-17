@@ -5,11 +5,13 @@ import { Search, ChevronDown, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/cn';
 import Link from 'next/link';
+import SearchModal from './SearchModal';
 
 export default function EditorialHeader() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showTopBar, setShowTopBar] = useState(true);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -55,20 +57,19 @@ export default function EditorialHeader() {
           showTopBar ? 'max-h-12 opacity-100' : 'max-h-0 opacity-0'
         )}
       >
-        <div className="max-w-[1400px] mx-auto px-6">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-12 text-xs">
             {/* Left: Today's Date */}
-            <div className="text-gray-500 font-medium">
+            <div className="text-gray-500 font-medium truncate flex-shrink min-w-0">
               {new Date().toLocaleDateString('en-AU', {
                 weekday: 'long',
-                year: 'numeric',
                 month: 'long',
                 day: 'numeric',
               })}
             </div>
 
             {/* Right: Auth Links */}
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-3 sm:gap-5 flex-shrink-0 ml-2">
               {isAuthenticated ? (
                 <>
                   <Link
@@ -76,11 +77,11 @@ export default function EditorialHeader() {
                     className="flex items-center gap-1.5 text-gray-700 hover:text-brand-primary font-medium transition-colors"
                   >
                     <User className="w-3.5 h-3.5" />
-                    {user?.name || 'Account'}
+                    <span className="hidden sm:inline">{user?.name || 'Account'}</span>
                   </Link>
                   <Link
                     href="/dashboard"
-                    className="text-gray-700 hover:text-brand-primary font-medium transition-colors"
+                    className="text-gray-700 hover:text-brand-primary font-medium transition-colors hidden sm:inline"
                   >
                     Dashboard
                   </Link>
@@ -89,13 +90,13 @@ export default function EditorialHeader() {
                 <>
                   <Link
                     href="/onboarding"
-                    className="text-gray-700 hover:text-brand-primary font-medium transition-colors"
+                    className="text-gray-700 hover:text-brand-primary font-medium transition-colors whitespace-nowrap inline-flex items-center"
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/onboarding"
-                    className="bg-black hover:bg-gray-800 text-white px-4 py-1.5 text-xs font-semibold transition-colors"
+                    className="bg-black hover:bg-gray-800 text-white px-3 sm:px-4 py-1.5 text-xs font-semibold transition-colors whitespace-nowrap inline-flex items-center"
                   >
                     Sign Up
                   </Link>
@@ -140,7 +141,7 @@ export default function EditorialHeader() {
               <div className="relative">
                 <button
                   onClick={() => handleDropdownToggle('more')}
-                  className="flex items-center gap-1 text-sm font-medium text-gray-900 hover:text-black transition-colors"
+                  className="flex items-center gap-1 text-sm font-medium text-gray-900 hover:text-black transition-colors pb-1"
                 >
                   More
                   <ChevronDown
@@ -181,6 +182,7 @@ export default function EditorialHeader() {
 
             {/* Search Icon */}
             <button
+              onClick={() => setIsSearchOpen(true)}
               className="p-2 text-gray-700 hover:text-black transition-colors"
               aria-label="Search"
             >
@@ -243,6 +245,9 @@ export default function EditorialHeader() {
           )}
         </div>
       </div>
+
+      {/* Search Modal */}
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 }
