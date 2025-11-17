@@ -121,7 +121,7 @@ export default function EditorialHeader() {
           {/* Left: Logo */}
           <Link
             href="/"
-            className="text-2xl font-serif font-bold text-black tracking-tight hover:text-brand-primary transition-colors"
+            className="flex items-center text-2xl font-serif font-bold text-black tracking-tight hover:text-brand-primary transition-colors leading-none"
           >
             Racing Life
           </Link>
