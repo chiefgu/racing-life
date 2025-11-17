@@ -1,7 +1,16 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, Clock, TrendingUp, FileText, Trophy, User as UserIcon, Loader2 } from 'lucide-react';
+import {
+  Search,
+  X,
+  Clock,
+  TrendingUp,
+  FileText,
+  Trophy,
+  User as UserIcon,
+  Loader2,
+} from 'lucide-react';
 import { useSearch } from '@/hooks/api/useSearch';
 import { apiClient } from '@/lib/api-client';
 
@@ -17,7 +26,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   const handleResultClick = async (resultId: string, resultType: string) => {
     try {
-      await apiClient.post('/search/click', {
+      await apiClient.trackSearchClick({
         resultId,
         resultType,
         query,
@@ -68,10 +77,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50 z-50"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
 
       {/* Search Modal */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg">
@@ -158,8 +164,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         result.type === 'news'
                           ? FileText
                           : result.type === 'race'
-                          ? Trophy
-                          : UserIcon;
+                            ? Trophy
+                            : UserIcon;
 
                       return (
                         <button
@@ -172,9 +178,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-medium text-gray-900 truncate">
-                                {result.title}
-                              </h4>
+                              <h4 className="font-medium text-gray-900 truncate">{result.title}</h4>
                               {result.category && (
                                 <span className="text-xs font-semibold text-gray-500 uppercase">
                                   {result.category}
@@ -182,9 +186,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                               )}
                             </div>
                             {result.subtitle && (
-                              <p className="text-sm text-gray-600 truncate">
-                                {result.subtitle}
-                              </p>
+                              <p className="text-sm text-gray-600 truncate">{result.subtitle}</p>
                             )}
                           </div>
                           <div className="flex-shrink-0">

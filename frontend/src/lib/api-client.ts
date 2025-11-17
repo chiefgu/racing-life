@@ -37,11 +37,7 @@ async function fetchWithAuth(endpoint: string, options: RequestOptions = {}) {
 
   if (!response.ok) {
     const errorData = isJson ? await response.json() : { message: response.statusText };
-    throw new ApiError(
-      errorData.message || 'An error occurred',
-      response.status,
-      errorData
-    );
+    throw new ApiError(errorData.message || 'An error occurred', response.status, errorData);
   }
 
   return isJson ? response.json() : response.text();
@@ -61,8 +57,7 @@ export const apiClient = {
       body: JSON.stringify(data),
     }),
 
-  getProfile: (token: string) =>
-    fetchWithAuth('/auth/me', { token }),
+  getProfile: (token: string) => fetchWithAuth('/auth/me', { token }),
 
   changePassword: (data: { current_password: string; new_password: string }, token: string) =>
     fetchWithAuth('/auth/password', {
@@ -87,12 +82,10 @@ export const apiClient = {
       token,
     }),
 
-  getFavourites: (token: string) =>
-    fetchWithAuth('/favorites', { token }),
+  getFavourites: (token: string) => fetchWithAuth('/favorites', { token }),
 
   // Watchlist endpoints
-  getWatchlist: (token: string) =>
-    fetchWithAuth('/watchlist', { token }),
+  getWatchlist: (token: string) => fetchWithAuth('/watchlist', { token }),
 
   addToWatchlist: (data: { entity_type: string; entity_name: string }, token: string) =>
     fetchWithAuth('/watchlist', {
@@ -105,5 +98,14 @@ export const apiClient = {
     fetchWithAuth(`/watchlist/${id}`, {
       method: 'DELETE',
       token,
+    }),
+
+  // Search endpoints
+  search: (query: string) => fetchWithAuth(`/search?query=${encodeURIComponent(query)}`),
+
+  trackSearchClick: (data: { resultId: string; resultType: string; query: string }) =>
+    fetchWithAuth('/search/click', {
+      method: 'POST',
+      body: JSON.stringify(data),
     }),
 };

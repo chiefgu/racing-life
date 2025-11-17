@@ -17,10 +17,7 @@ export function useSearch(query: string) {
         return [];
       }
 
-      const response = await apiClient.get<SearchResult[]>('/search', {
-        params: { q: query },
-      });
-      return response.data;
+      return await apiClient.search(query);
     },
     enabled: query.trim().length > 0,
     staleTime: 30000, // 30 seconds

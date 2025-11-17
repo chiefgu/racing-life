@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { NewsArticle } from '@/types';
 import EntityCardModal from './EntityCardModal';
 
@@ -16,7 +16,7 @@ export default function BlogPostContent({ article }: BlogPostContentProps) {
 
   // Function to detect and make entity mentions clickable
   const renderContentWithEntities = (content: string) => {
-    let processedContent = content;
+    const processedContent = content;
     const allEntities = [
       ...article.entities.horses.map((h) => ({ name: h, type: 'horse' as const })),
       ...article.entities.jockeys.map((j) => ({ name: j, type: 'jockey' as const })),
@@ -32,11 +32,11 @@ export default function BlogPostContent({ article }: BlogPostContentProps) {
     return paragraphs.map((paragraph, pIndex) => {
       if (!paragraph.trim()) return null;
 
-      let parts: (string | JSX.Element)[] = [paragraph];
+      let parts: (string | React.ReactElement)[] = [paragraph];
 
       // Replace entity mentions with clickable spans
       allEntities.forEach((entity, entityIndex) => {
-        const newParts: (string | JSX.Element)[] = [];
+        const newParts: (string | React.ReactElement)[] = [];
 
         parts.forEach((part, partIndex) => {
           if (typeof part === 'string') {
@@ -85,10 +85,7 @@ export default function BlogPostContent({ article }: BlogPostContentProps) {
 
       {/* Entity Card Modal */}
       {selectedEntity && (
-        <EntityCardModal
-          entity={selectedEntity}
-          onClose={() => setSelectedEntity(null)}
-        />
+        <EntityCardModal entity={selectedEntity} onClose={() => setSelectedEntity(null)} />
       )}
     </>
   );

@@ -11,7 +11,7 @@ interface BlogPostSidebarProps {
   isMobile?: boolean;
 }
 
-export default function BlogPostSidebar({ article, isMobile = false }: BlogPostSidebarProps) {
+export default function BlogPostSidebar({ article }: BlogPostSidebarProps) {
   const { data } = useNews();
 
   // Mock data for races (would come from API)
@@ -40,10 +40,9 @@ export default function BlogPostSidebar({ article, isMobile = false }: BlogPostS
   ];
 
   // Get related articles (excluding current one)
-  const relatedArticles =
-    Array.isArray(data)
-      ? data.filter((a: any) => a.id !== article.id).slice(0, 3)
-      : [];
+  const relatedArticles = Array.isArray(data)
+    ? data.filter((a: any) => a.id !== article.id).slice(0, 3)
+    : [];
 
   return (
     <div className="space-y-8">
@@ -111,17 +110,13 @@ export default function BlogPostSidebar({ article, isMobile = false }: BlogPostS
 
       {/* Featured Articles */}
       <div className="bg-white border-2 border-gray-200 p-6">
-        <h3 className="text-lg font-serif font-bold text-gray-900 mb-4">
-          More From Racing Life
-        </h3>
+        <h3 className="text-lg font-serif font-bold text-gray-900 mb-4">More From Racing Life</h3>
         <div className="space-y-4">
           {relatedArticles.map((relatedArticle: any, index: number) => (
             <div
               key={relatedArticle.id}
               className={`${
-                index !== relatedArticles.length - 1
-                  ? 'pb-4 border-b border-gray-200'
-                  : ''
+                index !== relatedArticles.length - 1 ? 'pb-4 border-b border-gray-200' : ''
               }`}
             >
               {relatedArticle.image && (
@@ -170,8 +165,8 @@ export default function BlogPostSidebar({ article, isMobile = false }: BlogPostS
           </div>
 
           <p className="text-sm text-gray-300 mb-6 leading-relaxed">
-            Track your favourite horses, jockeys, and trainers. Get instant alerts on form
-            changes, odds movements, and race entries.
+            Track your favourite horses, jockeys, and trainers. Get instant alerts on form changes,
+            odds movements, and race entries.
           </p>
 
           <div className="space-y-3 mb-8 text-sm">
@@ -204,9 +199,7 @@ export default function BlogPostSidebar({ article, isMobile = false }: BlogPostS
             Get Started
           </a>
 
-          <p className="text-xs text-gray-400 text-center mt-4">
-            Free • No credit card required
-          </p>
+          <p className="text-xs text-gray-400 text-center mt-4">Free • No credit card required</p>
         </div>
       </div>
     </div>

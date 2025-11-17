@@ -5,9 +5,7 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-
+export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Article | Racing Life`,
     description: 'Read the latest racing news and analysis',
