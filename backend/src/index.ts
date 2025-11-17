@@ -29,6 +29,8 @@ import ambassadorsRouter from './routes/ambassadors.routes';
 import articlesRouter from './routes/articles.routes';
 import adminRouter from './routes/admin.routes';
 import metricsRouter from './routes/metrics.routes';
+import marketMoversRouter from './routes/market-movers.routes';
+import featuredContentRouter from './routes/featured-content.routes';
 
 dotenv.config();
 
@@ -134,6 +136,8 @@ app.use('/api/preferences', preferencesRouter);
 app.use('/api/ambassadors', ambassadorsRouter);
 app.use('/api/articles', articlesRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/market-movers', marketMoversRouter);
+app.use('/api/featured-content', featuredContentRouter);
 
 // 404 handler
 app.use(notFoundHandler);
