@@ -16,26 +16,34 @@ export default function EditorialHeader() {
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
+    let ticking = false;
 
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
 
-      // Update shadow state
-      setIsScrolled(currentScrollY > 10);
+          // Update shadow state
+          setIsScrolled(currentScrollY > 10);
 
-      // Show top bar when scrolling up, hide when scrolling down
-      if (currentScrollY < lastScrollY) {
-        // Scrolling up
-        setShowTopBar(true);
-      } else if (currentScrollY > 10 && currentScrollY > lastScrollY) {
-        // Scrolling down and past threshold
-        setShowTopBar(false);
+          // Show top bar when scrolling up, hide when scrolling down
+          if (currentScrollY < lastScrollY) {
+            // Scrolling up
+            setShowTopBar(true);
+          } else if (currentScrollY > 10 && currentScrollY > lastScrollY) {
+            // Scrolling down and past threshold
+            setShowTopBar(false);
+          }
+
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+
+        ticking = true;
       }
-
-      lastScrollY = currentScrollY;
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -53,7 +61,7 @@ export default function EditorialHeader() {
       {/* Top Bar */}
       <div
         className={cn(
-          'border-b border-gray-100 transition-all duration-300 overflow-hidden',
+          'border-b border-gray-100 transition-all duration-300 overflow-hidden will-change-[max-height,opacity]',
           showTopBar ? 'max-h-12 opacity-100' : 'max-h-0 opacity-0'
         )}
       >
