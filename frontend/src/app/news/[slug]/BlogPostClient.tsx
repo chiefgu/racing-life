@@ -83,7 +83,7 @@ Chief rival Winx Jr, trained by Gai Waterhouse, worked shortly after Thunder Bol
   }
 
   // Use mock data if article is not found (for demonstration)
-  const displayArticle: typeof mockArticle = article || mockArticle;
+  const displayArticle = (article as typeof mockArticle) || mockArticle;
 
   return (
     <div className="flex flex-col min-h-screen">
