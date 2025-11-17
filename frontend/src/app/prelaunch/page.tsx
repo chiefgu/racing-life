@@ -57,7 +57,7 @@ export default function PrelaunchPage() {
         </div>
 
         {/* Secondary Navigation Bar */}
-        <div className="border-t border-gray-200 bg-brand-navy">
+        <div className="border-t border-brand-primary/20 bg-brand-primary">
           <div className="max-w-[1400px] mx-auto px-6">
             <div className="flex items-center h-10">
               <div className="flex items-center gap-6 overflow-x-auto">
