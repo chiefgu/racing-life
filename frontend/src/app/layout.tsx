@@ -7,13 +7,14 @@ import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   title: 'Racing Life - Australian Horse Racing Odds & News',
-  description: 'Compare odds from top Australian bookmakers and get the latest horse racing news with AI-powered sentiment analysis',
+  description:
+    'Compare odds from top Australian bookmakers and get the latest horse racing news with AI-powered sentiment analysis',
   viewport: {
     width: 'device-width',
     initialScale: 1,
     maximumScale: 5,
   },
-  themeColor: '#1e3a5f',
+  themeColor: '#24508F',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
@@ -26,7 +27,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'} />
-        <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'} />
+        <link
+          rel="dns-prefetch"
+          href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}
+        />
       </head>
       <body className="min-h-screen bg-background antialiased">
         <ReactQueryProvider>
