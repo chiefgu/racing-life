@@ -242,6 +242,15 @@ export default function HeroSectionSplit() {
     }
   }, [messages, isChatExpanded]);
 
+  // Auto-resize textarea when searchQuery changes (e.g., from clicking suggestions)
+  useEffect(() => {
+    const textarea = isChatExpanded ? chatInputRef.current : inputRef.current;
+    if (textarea && searchQuery) {
+      textarea.style.height = 'auto';
+      textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+    }
+  }, [searchQuery, isChatExpanded]);
+
   // Handle closing chat
   const handleCloseChat = () => {
     setIsChatExpanded(false);
@@ -474,7 +483,7 @@ export default function HeroSectionSplit() {
                           <button
                             key={index}
                             onClick={() => setSearchQuery(query)}
-                            className="text-xs bg-brand-light hover:bg-white border border-gray-200 hover:border-brand-primary text-gray-600 hover:text-brand-primary px-2.5 py-1 rounded-full transition-all cursor-pointer md:whitespace-nowrap overflow-hidden text-ellipsis text-left leading-tight"
+                            className="text-xs bg-brand-light hover:bg-white border border-gray-200 hover:border-brand-primary text-gray-600 hover:text-brand-primary px-2.5 py-1 rounded-full transition-all cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis"
                           >
                             "{query}"
                           </button>
