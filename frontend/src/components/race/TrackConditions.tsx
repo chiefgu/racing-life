@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 interface TrackConditionsProps {
   venue: string;
   distance: number;
