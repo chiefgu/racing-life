@@ -432,6 +432,12 @@ export default function HeroSectionSplit() {
                                 e.target.style.height = 'auto';
                                 e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
                               }}
+                              onFocus={(e) => {
+                                // Scroll input into view on mobile when focused
+                                setTimeout(() => {
+                                  e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }, 300);
+                              }}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                   e.preventDefault();
@@ -468,7 +474,7 @@ export default function HeroSectionSplit() {
                           <button
                             key={index}
                             onClick={() => setSearchQuery(query)}
-                            className="text-xs bg-brand-light hover:bg-white border border-gray-200 hover:border-brand-primary text-gray-600 hover:text-brand-primary px-2.5 py-1 rounded-full transition-all cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis"
+                            className="text-xs bg-brand-light hover:bg-white border border-gray-200 hover:border-brand-primary text-gray-600 hover:text-brand-primary px-2.5 py-1 rounded-full transition-all cursor-pointer md:whitespace-nowrap overflow-hidden text-ellipsis text-left leading-tight"
                           >
                             "{query}"
                           </button>
@@ -738,6 +744,12 @@ export default function HeroSectionSplit() {
                                       e.target.style.height = 'auto';
                                       e.target.style.height =
                                         Math.min(e.target.scrollHeight, 120) + 'px';
+                                    }}
+                                    onFocus={(e) => {
+                                      // Scroll input into view on mobile when focused
+                                      setTimeout(() => {
+                                        e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      }, 300);
                                     }}
                                     onKeyDown={(e) => {
                                       if (e.key === 'Enter' && !e.shiftKey) {
