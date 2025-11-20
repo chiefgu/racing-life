@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { db } from '../db';
+import { db } from '../db/knex';
 
 // Levenshtein distance for typo tolerance
 function levenshteinDistance(str1: string, str2: string): number {

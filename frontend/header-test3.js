@@ -6,8 +6,11 @@ const { chromium, devices } = require('playwright');
     ...devices['iPhone 12'],
   });
   const page = await context.newPage();
-  await page.goto('http://localhost:3000');
+  
+  // Navigate directly to /home instead of landing page
+  await page.goto('http://localhost:3000/home');
   await page.waitForTimeout(2000);
-  await page.screenshot({ path: 'mobile-nav-test.png', fullPage: false });
+  
+  await page.screenshot({ path: 'mobile-header-test3.png', fullPage: false });
   await browser.close();
 })();

@@ -104,14 +104,12 @@ export default function HeroSectionSplit() {
   if (race3Time < now) race3Time.setDate(race3Time.getDate() + 1);
 
   // Generate dynamic example queries based on today's races
-  const exampleQueries = isLoadingRaces
-    ? ['Best odds for Race 4', 'Track conditions', 'Horse form guide', 'Winning tips']
-    : [
-        'Best odds for R4 Flemington',
-        'Track conditions at Randwick',
-        'Thunder Bolt form guide',
-        'Race results today',
-      ];
+  const exampleQueries = [
+    'Best odds for R4 Flemington',
+    'Track conditions at Randwick',
+    'Thunder Bolt form guide',
+    'Race results today',
+  ];
 
   // Load saved chat history on mount
   useEffect(() => {
@@ -464,13 +462,13 @@ export default function HeroSectionSplit() {
                         initial={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="flex flex-wrap gap-1.5 overflow-hidden"
+                        className="grid grid-cols-2 gap-1.5 md:flex md:flex-wrap overflow-hidden"
                       >
                         {exampleQueries.map((query, index) => (
                           <button
                             key={index}
                             onClick={() => setSearchQuery(query)}
-                            className="text-xs bg-brand-light hover:bg-white border border-gray-200 hover:border-brand-primary text-gray-600 hover:text-brand-primary px-2.5 py-1 rounded-full transition-all cursor-pointer"
+                            className="text-xs bg-brand-light hover:bg-white border border-gray-200 hover:border-brand-primary text-gray-600 hover:text-brand-primary px-2.5 py-1 rounded-full transition-all cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis"
                           >
                             "{query}"
                           </button>
@@ -825,39 +823,39 @@ export default function HeroSectionSplit() {
                         <div className="flex flex-col gap-3">
                           {/* Market Steamer 1 */}
                           <div>
-                            <div className="flex items-center gap-1.5 mb-1">
-                              <TrendingDown className="w-4 h-4 text-green-600" />
-                              <span className="text-xs font-bold text-green-600 uppercase tracking-wider">
+                            <div className="flex items-center gap-1 mb-0.5">
+                              <TrendingDown className="w-3 h-3 md:w-4 md:h-4 text-green-600" />
+                              <span className="text-[10px] md:text-xs font-bold text-green-600 uppercase tracking-wider">
                                 Steamer
                               </span>
                             </div>
                             <div className="space-y-0.5">
-                              <div className="flex items-baseline justify-between">
+                              <div className="flex items-baseline justify-between gap-2">
                                 <a
                                   href="#race-randwick-r6"
-                                  className="text-base font-bold text-brand-dark-intense hover:text-brand-primary transition-colors"
+                                  className="text-sm md:text-base font-bold text-brand-dark-intense hover:text-brand-primary transition-colors truncate"
                                 >
                                   Lightning Strike
                                 </a>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-xs text-brand-dark-muted line-through">
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <span className="text-[10px] md:text-xs text-brand-dark-muted line-through">
                                     $5.20
                                   </span>
-                                  <span className="text-sm font-bold text-green-600">$4.20</span>
+                                  <span className="text-xs md:text-sm font-bold text-green-600">$4.20</span>
                                 </div>
                               </div>
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center justify-between gap-2">
                                 <a
                                   href="#race-randwick-r6"
-                                  className="text-xs text-brand-dark-muted hover:text-brand-primary transition-colors"
+                                  className="text-[10px] md:text-xs text-brand-dark-muted hover:text-brand-primary transition-colors truncate"
                                 >
                                   Randwick R6 · 1200m
                                 </a>
-                                <div className="flex items-center gap-1">
-                                  <span className="text-xs text-brand-dark-muted">Best</span>
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <span className="text-[10px] md:text-xs text-brand-dark-muted">Best</span>
                                   <a
                                     href="#race-randwick-r6"
-                                    className="w-10 h-5 bg-white rounded flex items-center justify-center p-0.5 hover:opacity-80 transition-opacity"
+                                    className="w-8 h-4 md:w-10 md:h-5 bg-white rounded flex items-center justify-center p-0.5 hover:opacity-80 transition-opacity"
                                   >
                                     <Image
                                       src="/logos/sportsbet.jpeg"
@@ -874,39 +872,39 @@ export default function HeroSectionSplit() {
 
                           {/* Market Steamer 2 */}
                           <div>
-                            <div className="flex items-center gap-1.5 mb-1">
-                              <TrendingDown className="w-4 h-4 text-green-600" />
-                              <span className="text-xs font-bold text-green-600 uppercase tracking-wider">
+                            <div className="flex items-center gap-1 mb-0.5">
+                              <TrendingDown className="w-3 h-3 md:w-4 md:h-4 text-green-600" />
+                              <span className="text-[10px] md:text-xs font-bold text-green-600 uppercase tracking-wider">
                                 Steamer
                               </span>
                             </div>
                             <div className="space-y-0.5">
-                              <div className="flex items-baseline justify-between">
+                              <div className="flex items-baseline justify-between gap-2">
                                 <a
                                   href="#race-caulfield-r8"
-                                  className="text-base font-bold text-brand-dark-intense hover:text-brand-primary transition-colors"
+                                  className="text-sm md:text-base font-bold text-brand-dark-intense hover:text-brand-primary transition-colors truncate"
                                 >
                                   Golden Arrow
                                 </a>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-xs text-brand-dark-muted line-through">
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <span className="text-[10px] md:text-xs text-brand-dark-muted line-through">
                                     $7.50
                                   </span>
-                                  <span className="text-sm font-bold text-green-600">$6.20</span>
+                                  <span className="text-xs md:text-sm font-bold text-green-600">$6.20</span>
                                 </div>
                               </div>
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center justify-between gap-2">
                                 <a
                                   href="#race-caulfield-r8"
-                                  className="text-xs text-brand-dark-muted hover:text-brand-primary transition-colors"
+                                  className="text-[10px] md:text-xs text-brand-dark-muted hover:text-brand-primary transition-colors truncate"
                                 >
                                   Caulfield R8 · 2400m
                                 </a>
-                                <div className="flex items-center gap-1">
-                                  <span className="text-xs text-brand-dark-muted">Best</span>
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <span className="text-[10px] md:text-xs text-brand-dark-muted">Best</span>
                                   <a
                                     href="#race-caulfield-r8"
-                                    className="w-10 h-5 bg-white rounded flex items-center justify-center p-0.5 hover:opacity-80 transition-opacity"
+                                    className="w-8 h-4 md:w-10 md:h-5 bg-white rounded flex items-center justify-center p-0.5 hover:opacity-80 transition-opacity"
                                   >
                                     <Image
                                       src="/logos/ladbrokes.png"
@@ -926,39 +924,39 @@ export default function HeroSectionSplit() {
 
                           {/* Market Drifter */}
                           <div>
-                            <div className="flex items-center gap-1.5 mb-1">
-                              <TrendingUp className="w-4 h-4 text-red-600" />
-                              <span className="text-xs font-bold text-red-600 uppercase tracking-wider">
+                            <div className="flex items-center gap-1 mb-0.5">
+                              <TrendingUp className="w-3 h-3 md:w-4 md:h-4 text-red-600" />
+                              <span className="text-[10px] md:text-xs font-bold text-red-600 uppercase tracking-wider">
                                 Drifter
                               </span>
                             </div>
                             <div className="space-y-0.5">
-                              <div className="flex items-baseline justify-between">
+                              <div className="flex items-baseline justify-between gap-2">
                                 <a
                                   href="#race-flemington-r4"
-                                  className="text-base font-bold text-brand-dark-intense hover:text-brand-primary transition-colors"
+                                  className="text-sm md:text-base font-bold text-brand-dark-intense hover:text-brand-primary transition-colors truncate"
                                 >
                                   Storm Warning
                                 </a>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-xs text-brand-dark-muted line-through">
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <span className="text-[10px] md:text-xs text-brand-dark-muted line-through">
                                     $3.80
                                   </span>
-                                  <span className="text-sm font-bold text-red-600">$4.60</span>
+                                  <span className="text-xs md:text-sm font-bold text-red-600">$4.60</span>
                                 </div>
                               </div>
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center justify-between gap-2">
                                 <a
                                   href="#race-flemington-r4"
-                                  className="text-xs text-brand-dark-muted hover:text-brand-primary transition-colors"
+                                  className="text-[10px] md:text-xs text-brand-dark-muted hover:text-brand-primary transition-colors truncate"
                                 >
                                   Flemington R4 · 1400m
                                 </a>
-                                <div className="flex items-center gap-1">
-                                  <span className="text-xs text-brand-dark-muted">Best</span>
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <span className="text-[10px] md:text-xs text-brand-dark-muted">Best</span>
                                   <a
                                     href="#race-flemington-r4"
-                                    className="w-10 h-5 bg-white rounded flex items-center justify-center p-0.5 hover:opacity-80 transition-opacity"
+                                    className="w-8 h-4 md:w-10 md:h-5 bg-white rounded flex items-center justify-center p-0.5 hover:opacity-80 transition-opacity"
                                   >
                                     <Image
                                       src="/logos/tab.png"
