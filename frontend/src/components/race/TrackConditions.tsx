@@ -6,7 +6,11 @@ interface TrackConditionsProps {
   raceId: string;
 }
 
-export default function TrackConditions({ venue, distance, raceId }: TrackConditionsProps) {
+export default function TrackConditions({
+  venue,
+  distance,
+  raceId: _raceId,
+}: TrackConditionsProps) {
   // Mock data - TODO: Replace with real API data
   const currentConditions = {
     trackRating: 'Good 4',
