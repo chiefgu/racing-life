@@ -80,6 +80,16 @@
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     @apply bg-gray-400 dark:bg-gray-600;
   }
+
+  /* Hide scrollbar completely */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Loading skeleton animation */

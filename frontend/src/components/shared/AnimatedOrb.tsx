@@ -18,7 +18,7 @@ export default function AnimatedOrb({
   size = 'large',
   energy = 0,
 }: {
-  size?: 'tiny' | 'small' | 'large' | 'xlarge' | 'success';
+  size?: 'tiny' | 'medium' | 'small' | 'large' | 'xlarge' | 'success';
   energy?: number;
 }) {
   const [prevEnergy, setPrevEnergy] = useState(energy);
@@ -38,6 +38,11 @@ export default function AnimatedOrb({
       container: 'w-8 h-8',
       baseWidth: 37.545, // 25% of original (for inline use)
       bgWidth: 37.545,
+    },
+    medium: {
+      container: 'w-20 h-20',
+      baseWidth: 93.863, // ~35% of original (80px)
+      bgWidth: 93.863,
     },
     small: {
       container: 'w-32 h-32',
