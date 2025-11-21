@@ -124,7 +124,7 @@ export default function RaceHeader({ race }: RaceHeaderProps) {
                     onClick={() => setIsTrackDropdownOpen(false)}
                   />
                   {/* Dropdown */}
-                  <div className="absolute top-full left-0 mt-1 w-80 bg-white border border-brand-ui shadow-lg z-40">
+                  <div className="absolute top-full right-0 mt-1 w-[calc(100vw-2rem)] sm:w-80 bg-white border border-brand-ui shadow-lg z-40 max-h-[70vh] overflow-y-auto">
                     {/* Date Navigation Section */}
                     <div className="border-b border-brand-ui p-3 bg-brand-light">
                       <div className="flex items-center justify-between gap-2">
