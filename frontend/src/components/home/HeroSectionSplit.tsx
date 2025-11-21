@@ -228,6 +228,7 @@ export default function HeroSectionSplit() {
       // Cleanup timeout on unmount
       return () => clearTimeout(timeoutId);
     }
+    return undefined;
   }, [messages.length, isChatExpanded]); // Only trigger on new messages
 
   // Auto-resize textarea when searchQuery changes (e.g., from clicking suggestions)
