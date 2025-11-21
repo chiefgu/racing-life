@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Star, Gift, Shield, ExternalLink } from 'lucide-react';
+import { Star, Gift, ExternalLink } from 'lucide-react';
 
 interface Bookmaker {
   name: string;
