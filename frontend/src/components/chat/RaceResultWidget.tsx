@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Trophy, Clock, DollarSign } from 'lucide-react';
+import { Trophy, DollarSign } from 'lucide-react';
 
 interface ResultHorse {
   position: number;

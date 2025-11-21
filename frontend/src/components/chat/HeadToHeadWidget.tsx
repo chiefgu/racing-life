@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Swords, TrendingUp, TrendingDown } from 'lucide-react';
+import { Swords, TrendingDown } from 'lucide-react';
 
 interface HorseStats {
   name: string;

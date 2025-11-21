@@ -80,12 +80,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       setConnected(false);
     });
 
-    newSocket.on('connect_error', (error) => {
+    newSocket.on('connect_error', (_error) => {
       // Silently fail - WebSocket is optional for now
       setConnected(false);
     });
 
-    newSocket.on('error', (error) => {
+    newSocket.on('error', (_error) => {
       // Silently fail - WebSocket is optional for now
     });
 

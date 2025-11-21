@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Trophy, TrendingUp, Activity } from 'lucide-react';
+import { TrendingUp, Activity } from 'lucide-react';
 
 interface RaceResult {
   date: string;
@@ -61,9 +61,6 @@ export default function FormGuideCard({
   };
 
   const winRate = ((careerStats.wins / careerStats.starts) * 100).toFixed(0);
-  const placeRate = (((careerStats.wins + careerStats.places) / careerStats.starts) * 100).toFixed(
-    0
-  );
 
   return (
     <motion.div
