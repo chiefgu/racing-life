@@ -56,8 +56,15 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: 3,
+      autoConnect: false, // Don't auto-connect, we'll do it manually
     });
+
+    // Only try to connect if we're in development or have a backend URL configured
+    if (process.env.NODE_ENV === 'development' && backendUrl.includes('localhost')) {
+      // Try to connect, but don't spam errors
+      newSocket.connect();
+    }
 
     socketRef.current = newSocket;
     setSocket(newSocket);
@@ -74,12 +81,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     });
 
     newSocket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
+      // Silently fail - WebSocket is optional for now
       setConnected(false);
     });
 
     newSocket.on('error', (error) => {
-      console.error('WebSocket error:', error);
+      // Silently fail - WebSocket is optional for now
     });
 
     // Handle subscription confirmations

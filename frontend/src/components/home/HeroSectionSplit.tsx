@@ -8,6 +8,7 @@ import { Shimmer } from '@/components/ui/Shimmer';
 import { AnimatePresence, motion } from 'framer-motion';
 import OddsComparisonWidget from '@/components/chat/OddsComparisonWidget';
 import FormGuideCard from '@/components/chat/FormGuideCard';
+import HorseComparison from '@/components/chat/HorseComparison';
 
 interface ChatMessage {
   id: string;
@@ -16,6 +17,7 @@ interface ChatMessage {
   timestamp: Date;
   showOddsWidget?: boolean;
   showFormGuide?: boolean;
+  showHorseComparison?: boolean;
   quickActions?: Array<{
     label: string;
     icon: 'odds' | 'form' | 'info';
@@ -77,6 +79,7 @@ export default function HeroSectionSplit() {
   const [isChatExpanded, setIsChatExpanded] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isAiTyping, setIsAiTyping] = useState(false);
+  const [chatHasBeenUsed, setChatHasBeenUsed] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const lastMessageRef = useRef<HTMLDivElement>(null);
@@ -202,62 +205,70 @@ export default function HeroSectionSplit() {
     return () => clearTimeout(timeout);
   }, [placeholderText, isTyping, currentPromptIndex, isChatExpanded]);
 
-  // Scroll within the messages container only (doesn't affect page scroll)
+  // Scroll to bottom when new messages arrive (simplified for mobile stability)
   useEffect(() => {
-    if (
-      isChatExpanded &&
-      lastMessageRef.current &&
-      messagesContainerRef.current &&
-      messages.length > 0
-    ) {
+    if (isChatExpanded && messagesContainerRef.current && messages.length > 0) {
       const container = messagesContainerRef.current;
-      const lastMessage = messages[messages.length - 1];
 
       // Small delay to let the message render
-      setTimeout(() => {
-        // Calculate position of last message relative to container
-        const messageElement = lastMessageRef.current;
-        if (messageElement) {
-          const containerRect = container.getBoundingClientRect();
-          const messageRect = messageElement.getBoundingClientRect();
-
-          // Calculate how much to scroll to show the top of the message
-          const scrollAmount = messageRect.top - containerRect.top + container.scrollTop;
-
-          if (lastMessage.role === 'assistant') {
-            // For AI messages, scroll to show the top
-            container.scrollTo({
-              top: scrollAmount,
-              behavior: 'smooth',
-            });
-          } else {
-            // For user messages, scroll to bottom
+      const timeoutId = setTimeout(() => {
+        // Check if container still exists before scrolling
+        if (container && messagesContainerRef.current) {
+          try {
             container.scrollTo({
               top: container.scrollHeight,
               behavior: 'smooth',
             });
+          } catch (error) {
+            // Silently fail if container is unmounting
           }
         }
-      }, 100);
+      }, 50);
+
+      // Cleanup timeout on unmount
+      return () => clearTimeout(timeoutId);
     }
-  }, [messages, isChatExpanded]);
+  }, [messages.length, isChatExpanded]); // Only trigger on new messages
 
   // Auto-resize textarea when searchQuery changes (e.g., from clicking suggestions)
   useEffect(() => {
     const textarea = isChatExpanded ? chatInputRef.current : inputRef.current;
     if (textarea && searchQuery) {
-      textarea.style.height = 'auto';
-      textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+      try {
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+      } catch (error) {
+        // Silently fail if textarea is unmounting
+      }
     }
   }, [searchQuery, isChatExpanded]);
+
+  // Prevent body scroll when chat is open
+  useEffect(() => {
+    try {
+      if (isChatExpanded) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    } catch (error) {
+      // Silently fail if there's an issue
+    }
+
+    return () => {
+      try {
+        document.body.style.overflow = '';
+      } catch (error) {
+        // Silently fail on cleanup
+      }
+    };
+  }, [isChatExpanded]);
 
   // Handle closing chat
   const handleCloseChat = () => {
     setIsChatExpanded(false);
     setSearchQuery('');
-    // Clear chat history
-    setMessages([]);
-    localStorage.removeItem('racingLifeChatHistory');
+    // Don't clear messages - keep conversation history for when they reopen
   };
 
   // Handle escape key to close chat
@@ -290,6 +301,7 @@ export default function HeroSectionSplit() {
     setMessages((prev) => [...prev, userMessage]);
     setSearchQuery('');
     setIsChatExpanded(true);
+    setChatHasBeenUsed(true);
     setIsAiTyping(true);
 
     // Reset textarea height and auto-focus the input after sending
@@ -354,16 +366,45 @@ export default function HeroSectionSplit() {
           suggestions: ['What are the odds for this horse?', 'Show track record at Flemington'],
         };
       }
+      // Demo: Show horse comparison for comparison queries
+      else if (
+        query.includes('compare') ||
+        query.includes('comparison') ||
+        query.includes('versus') ||
+        query.includes('vs')
+      ) {
+        aiMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: `Here's a detailed side-by-side comparison of the top 3 runners in Flemington R4. Thunder Bolt has the best track record, while Lightning Strike shows superior distance form. Storm Warning offers the best value at current odds.`,
+          timestamp: new Date(),
+          showHorseComparison: true,
+          quickActions: [
+            {
+              label: 'View Full Field',
+              icon: 'info',
+              action: () => alert('Show full field'),
+            },
+            {
+              label: 'Track Analysis',
+              icon: 'form',
+              action: () => alert('Show track analysis'),
+            },
+          ],
+          suggestions: ['Which horse has the best jockey?', 'What are the track conditions?'],
+        };
+      }
       // Default response
       else {
         aiMessage = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: `I understand you're asking about "${userMessage.content}". I can help you with odds comparison, form analysis, track records, jockey statistics, and more. Try asking about odds or form to see interactive cards!`,
+          content: `I understand you're asking about "${userMessage.content}". I can help you with odds comparison, form analysis, horse comparisons, track records, jockey statistics, and more. Try asking about odds, form, or comparisons to see interactive cards!`,
           timestamp: new Date(),
           suggestions: [
             'Show me the best odds for Thunder Bolt',
             "What is Lightning Strike's recent form?",
+            'Compare the top horses in Flemington R4',
           ],
         };
       }
@@ -441,12 +482,6 @@ export default function HeroSectionSplit() {
                                 e.target.style.height = 'auto';
                                 e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
                               }}
-                              onFocus={(e) => {
-                                // Scroll input into view on mobile when focused
-                                setTimeout(() => {
-                                  e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                }, 300);
-                              }}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                   e.preventDefault();
@@ -493,298 +528,411 @@ export default function HeroSectionSplit() {
                   </AnimatePresence>
 
                   {/* Chat Interface */}
-                  <AnimatePresence mode="wait">
-                    {isChatExpanded && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.4, ease: 'easeInOut' }}
-                        className="overflow-hidden mt-4"
-                      >
-                        <div className="relative bg-gray-50 rounded-lg border border-gray-200">
-                          {/* Close Button */}
-                          <button
-                            onClick={handleCloseChat}
-                            className="absolute top-3 right-3 z-10 p-1.5 bg-white hover:bg-gray-100 rounded-full transition-colors shadow-sm"
-                            aria-label="Close chat"
-                          >
-                            <X className="w-4 h-4 text-gray-600" />
-                          </button>
+                  {isChatExpanded && (
+                    <div className="fixed inset-0 z-50 bg-white">
+                      <div className="h-full flex flex-col bg-gray-50">
+                        {/* Close Button */}
+                        <button
+                          onClick={handleCloseChat}
+                          className="absolute top-3 right-3 z-10 p-1.5 bg-white hover:bg-gray-100 rounded-full transition-colors shadow-sm"
+                          aria-label="Close chat"
+                        >
+                          <X className="w-4 h-4 text-gray-600" />
+                        </button>
 
-                          {/* Chat Messages */}
-                          <div
-                            ref={messagesContainerRef}
-                            className="p-6 pt-12 max-h-96 overflow-y-auto space-y-4"
-                          >
-                            {messages.map((message, index) => {
-                              const isLastMessage = index === messages.length - 1;
-                              return (
-                                <motion.div
-                                  key={message.id}
-                                  ref={isLastMessage ? lastMessageRef : null}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ duration: 0.3 }}
-                                  className={`flex flex-col ${message.role === 'user' ? 'items-end' : 'items-start'}`}
+                        {/* Chat Messages */}
+                        <div
+                          ref={messagesContainerRef}
+                          className="flex-1 overflow-y-auto p-6 pt-12 space-y-4"
+                        >
+                          {messages.map((message, index) => {
+                            const isLastMessage = index === messages.length - 1;
+                            return (
+                              <motion.div
+                                key={message.id}
+                                ref={isLastMessage ? lastMessageRef : null}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className={`flex flex-col ${message.role === 'user' ? 'items-end' : 'items-start'}`}
+                              >
+                                <div
+                                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                                    message.role === 'user'
+                                      ? 'bg-brand-primary text-white'
+                                      : 'bg-white text-gray-900 border border-gray-200'
+                                  }`}
                                 >
-                                  <div
-                                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                                      message.role === 'user'
-                                        ? 'bg-brand-primary text-white'
-                                        : 'bg-white text-gray-900 border border-gray-200'
+                                  <p className="text-sm leading-relaxed">{message.content}</p>
+                                  <span
+                                    className={`text-xs mt-1 block ${
+                                      message.role === 'user' ? 'text-white/70' : 'text-gray-500'
                                     }`}
                                   >
-                                    <p className="text-sm leading-relaxed">{message.content}</p>
-                                    <span
-                                      className={`text-xs mt-1 block ${
-                                        message.role === 'user' ? 'text-white/70' : 'text-gray-500'
-                                      }`}
-                                    >
-                                      {message.timestamp.toLocaleTimeString('en-AU', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                      })}
-                                    </span>
-                                  </div>
-
-                                  {/* Widgets */}
-                                  {message.role === 'assistant' && (
-                                    <>
-                                      {message.showOddsWidget && (
-                                        <div className="w-full max-w-md mt-2">
-                                          <OddsComparisonWidget
-                                            horseName="Thunder Bolt"
-                                            race="Flemington R4 · 1400m"
-                                            bookmakerOdds={[
-                                              {
-                                                bookmaker: 'TAB',
-                                                logo: '/logos/tab.png',
-                                                odds: 3.5,
-                                                wasOdds: 3.8,
-                                                url: 'https://tab.com.au',
-                                              },
-                                              {
-                                                bookmaker: 'Sportsbet',
-                                                logo: '/logos/sportsbet.jpeg',
-                                                odds: 3.6,
-                                                url: 'https://sportsbet.com.au',
-                                              },
-                                              {
-                                                bookmaker: 'Ladbrokes',
-                                                logo: '/logos/ladbrokes.png',
-                                                odds: 3.7,
-                                                wasOdds: 3.5,
-                                                url: 'https://ladbrokes.com.au',
-                                              },
-                                              {
-                                                bookmaker: 'Bet365',
-                                                logo: '/logos/bet365.png',
-                                                odds: 3.8,
-                                                url: 'https://bet365.com.au',
-                                              },
-                                            ]}
-                                          />
-                                        </div>
-                                      )}
-
-                                      {message.showFormGuide && (
-                                        <div className="w-full max-w-md mt-2">
-                                          <FormGuideCard
-                                            horseName="Thunder Bolt"
-                                            age={5}
-                                            sex="Gelding"
-                                            trainer="C. Waller"
-                                            jockey="J. McDonald"
-                                            weight="58.5kg"
-                                            barrier={4}
-                                            careerStats={{
-                                              starts: 18,
-                                              wins: 6,
-                                              places: 4,
-                                              prize: '$425k',
-                                            }}
-                                            recentForm={[
-                                              {
-                                                date: '12 Jan',
-                                                track: 'Randwick',
-                                                distance: '1400m',
-                                                position: 1,
-                                                totalRunners: 12,
-                                                trackCondition: 'Good 4',
-                                                time: '1:22.45',
-                                              },
-                                              {
-                                                date: '28 Dec',
-                                                track: 'Flemington',
-                                                distance: '1400m',
-                                                position: 2,
-                                                totalRunners: 14,
-                                                trackCondition: 'Soft 5',
-                                                time: '1:23.12',
-                                              },
-                                              {
-                                                date: '15 Dec',
-                                                track: 'Caulfield',
-                                                distance: '1600m',
-                                                position: 1,
-                                                totalRunners: 10,
-                                                trackCondition: 'Good 3',
-                                                time: '1:34.67',
-                                              },
-                                              {
-                                                date: '1 Dec',
-                                                track: 'Moonee Valley',
-                                                distance: '1400m',
-                                                position: 5,
-                                                totalRunners: 12,
-                                                trackCondition: 'Good 4',
-                                                time: '1:23.89',
-                                              },
-                                              {
-                                                date: '18 Nov',
-                                                track: 'Flemington',
-                                                distance: '1200m',
-                                                position: 3,
-                                                totalRunners: 16,
-                                                trackCondition: 'Firm 2',
-                                                time: '1:09.23',
-                                              },
-                                            ]}
-                                            trackRecord={{
-                                              starts: 4,
-                                              wins: 2,
-                                              places: 1,
-                                            }}
-                                            distanceRecord={{
-                                              starts: 8,
-                                              wins: 4,
-                                              places: 2,
-                                            }}
-                                          />
-                                        </div>
-                                      )}
-
-                                      {/* Quick Action Buttons */}
-                                      {message.quickActions && message.quickActions.length > 0 && (
-                                        <div className="flex flex-wrap gap-2 mt-2">
-                                          {message.quickActions.map((action, idx) => (
-                                            <button
-                                              key={idx}
-                                              onClick={action.action}
-                                              className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-gray-50 border border-gray-200 hover:border-brand-primary text-gray-700 hover:text-brand-primary rounded-full text-xs font-medium transition-colors"
-                                            >
-                                              {action.icon === 'odds' && (
-                                                <BarChart3 className="w-3.5 h-3.5" />
-                                              )}
-                                              {action.icon === 'form' && (
-                                                <FileText className="w-3.5 h-3.5" />
-                                              )}
-                                              {action.icon === 'info' && (
-                                                <Info className="w-3.5 h-3.5" />
-                                              )}
-                                              {action.label}
-                                            </button>
-                                          ))}
-                                        </div>
-                                      )}
-
-                                      {/* Contextual Suggestions */}
-                                      {message.suggestions && message.suggestions.length > 0 && (
-                                        <div className="mt-3 space-y-1.5">
-                                          <div className="text-xs text-gray-500 font-medium">
-                                            You might also ask:
-                                          </div>
-                                          {message.suggestions.map((suggestion, idx) => (
-                                            <button
-                                              key={idx}
-                                              onClick={() => setSearchQuery(suggestion)}
-                                              className="block w-full text-left px-3 py-2 bg-gray-50 hover:bg-white border border-gray-200 hover:border-brand-primary text-gray-700 hover:text-brand-primary rounded-lg text-xs transition-colors"
-                                            >
-                                              {suggestion}
-                                            </button>
-                                          ))}
-                                        </div>
-                                      )}
-                                    </>
-                                  )}
-                                </motion.div>
-                              );
-                            })}
-
-                            {/* AI Typing Indicator */}
-                            {isAiTyping && (
-                              <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="flex justify-start"
-                              >
-                                <div className="bg-white text-gray-900 border border-gray-200 rounded-2xl px-4 py-3">
-                                  <div className="flex gap-1">
-                                    <span
-                                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                                      style={{ animationDelay: '0ms' }}
-                                    ></span>
-                                    <span
-                                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                                      style={{ animationDelay: '150ms' }}
-                                    ></span>
-                                    <span
-                                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                                      style={{ animationDelay: '300ms' }}
-                                    ></span>
-                                  </div>
+                                    {message.timestamp.toLocaleTimeString('en-AU', {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </span>
                                 </div>
-                              </motion.div>
-                            )}
-                          </div>
 
-                          {/* Input at Bottom of Chat */}
-                          <div className="border-t border-gray-200 bg-white rounded-b-lg p-4">
-                            <form onSubmit={handleSubmitChat}>
-                              <div className="relative bg-gray-50 rounded-full border border-gray-200 focus-within:border-brand-primary transition-colors">
-                                <div className="flex items-center px-4 py-3">
-                                  <textarea
-                                    ref={chatInputRef}
-                                    value={searchQuery}
-                                    onChange={(e) => {
-                                      setSearchQuery(e.target.value);
-                                      // Auto-resize textarea
-                                      e.target.style.height = 'auto';
-                                      e.target.style.height =
-                                        Math.min(e.target.scrollHeight, 120) + 'px';
-                                    }}
-                                    onFocus={(e) => {
-                                      // Scroll input into view on mobile when focused
-                                      setTimeout(() => {
-                                        e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                      }, 300);
-                                    }}
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        handleSubmitChat();
-                                      }
-                                    }}
-                                    placeholder="Ask a follow-up question..."
-                                    rows={1}
-                                    className="flex-1 text-base outline-none focus:outline-none text-gray-900 placeholder-gray-400 bg-transparent resize-none overflow-y-auto"
-                                    style={{ maxHeight: '120px', minHeight: '24px' }}
-                                  />
-                                  <button
-                                    type="submit"
-                                    className="ml-2 bg-brand-primary hover:bg-brand-primary-intense text-white px-4 py-2 rounded-full font-semibold transition-colors text-sm flex-shrink-0"
-                                  >
-                                    Send
-                                  </button>
+                                {/* Widgets */}
+                                {message.role === 'assistant' && (
+                                  <>
+                                    {message.showOddsWidget && (
+                                      <div className="w-full max-w-md mt-2">
+                                        <OddsComparisonWidget
+                                          horseName="Thunder Bolt"
+                                          race="Flemington R4 · 1400m"
+                                          bookmakerOdds={[
+                                            {
+                                              bookmaker: 'TAB',
+                                              logo: '/logos/tab.png',
+                                              odds: 3.5,
+                                              wasOdds: 3.8,
+                                              url: 'https://tab.com.au',
+                                            },
+                                            {
+                                              bookmaker: 'Sportsbet',
+                                              logo: '/logos/sportsbet.jpeg',
+                                              odds: 3.6,
+                                              url: 'https://sportsbet.com.au',
+                                            },
+                                            {
+                                              bookmaker: 'Ladbrokes',
+                                              logo: '/logos/ladbrokes.png',
+                                              odds: 3.7,
+                                              wasOdds: 3.5,
+                                              url: 'https://ladbrokes.com.au',
+                                            },
+                                            {
+                                              bookmaker: 'Bet365',
+                                              logo: '/logos/bet365.png',
+                                              odds: 3.8,
+                                              url: 'https://bet365.com.au',
+                                            },
+                                          ]}
+                                        />
+                                      </div>
+                                    )}
+
+                                    {message.showFormGuide && (
+                                      <div className="w-full max-w-md mt-2">
+                                        <FormGuideCard
+                                          horseName="Thunder Bolt"
+                                          age={5}
+                                          sex="Gelding"
+                                          trainer="C. Waller"
+                                          jockey="J. McDonald"
+                                          weight="58.5kg"
+                                          barrier={4}
+                                          careerStats={{
+                                            starts: 18,
+                                            wins: 6,
+                                            places: 4,
+                                            prize: '$425k',
+                                          }}
+                                          recentForm={[
+                                            {
+                                              date: '12 Jan',
+                                              track: 'Randwick',
+                                              distance: '1400m',
+                                              position: 1,
+                                              totalRunners: 12,
+                                              trackCondition: 'Good 4',
+                                              time: '1:22.45',
+                                            },
+                                            {
+                                              date: '28 Dec',
+                                              track: 'Flemington',
+                                              distance: '1400m',
+                                              position: 2,
+                                              totalRunners: 14,
+                                              trackCondition: 'Soft 5',
+                                              time: '1:23.12',
+                                            },
+                                            {
+                                              date: '15 Dec',
+                                              track: 'Caulfield',
+                                              distance: '1600m',
+                                              position: 1,
+                                              totalRunners: 10,
+                                              trackCondition: 'Good 3',
+                                              time: '1:34.67',
+                                            },
+                                            {
+                                              date: '1 Dec',
+                                              track: 'Moonee Valley',
+                                              distance: '1400m',
+                                              position: 5,
+                                              totalRunners: 12,
+                                              trackCondition: 'Good 4',
+                                              time: '1:23.89',
+                                            },
+                                            {
+                                              date: '18 Nov',
+                                              track: 'Flemington',
+                                              distance: '1200m',
+                                              position: 3,
+                                              totalRunners: 16,
+                                              trackCondition: 'Firm 2',
+                                              time: '1:09.23',
+                                            },
+                                          ]}
+                                          trackRecord={{
+                                            starts: 4,
+                                            wins: 2,
+                                            places: 1,
+                                          }}
+                                          distanceRecord={{
+                                            starts: 8,
+                                            wins: 4,
+                                            places: 2,
+                                          }}
+                                        />
+                                      </div>
+                                    )}
+
+                                    {message.showHorseComparison && (
+                                      <div className="w-full mt-2">
+                                        <HorseComparison
+                                          race="Flemington R4 · 1400m · Good 4"
+                                          horses={[
+                                            {
+                                              name: 'Thunder Bolt',
+                                              number: 4,
+                                              barrier: 4,
+                                              jockey: 'J. McDonald',
+                                              trainer: 'C. Waller',
+                                              weight: '58.5kg',
+                                              age: 5,
+                                              sex: 'G',
+                                              currentOdds: 3.5,
+                                              wasOdds: 3.8,
+                                              lastFive: '1-2-1-5-3',
+                                              careerRecord: {
+                                                starts: 18,
+                                                wins: 6,
+                                                places: 4,
+                                                winPct: 33,
+                                              },
+                                              trackRecord: {
+                                                starts: 4,
+                                                wins: 2,
+                                                places: 1,
+                                                winPct: 50,
+                                              },
+                                              distanceRecord: {
+                                                starts: 8,
+                                                wins: 4,
+                                                places: 2,
+                                                winPct: 50,
+                                              },
+                                              prizeMoney: 425000,
+                                              speedRating: 98,
+                                              lastStart: {
+                                                position: 1,
+                                                margin: 'Won by 1.2L',
+                                                track: 'Randwick',
+                                                distance: 1400,
+                                              },
+                                            },
+                                            {
+                                              name: 'Lightning Strike',
+                                              number: 7,
+                                              barrier: 2,
+                                              jockey: 'R. King',
+                                              trainer: 'G. Waterhouse',
+                                              weight: '57kg',
+                                              age: 4,
+                                              sex: 'M',
+                                              currentOdds: 4.2,
+                                              wasOdds: 5.2,
+                                              lastFive: '2-1-3-1-2',
+                                              careerRecord: {
+                                                starts: 15,
+                                                wins: 5,
+                                                places: 7,
+                                                winPct: 33,
+                                              },
+                                              trackRecord: {
+                                                starts: 3,
+                                                wins: 1,
+                                                places: 2,
+                                                winPct: 33,
+                                              },
+                                              distanceRecord: {
+                                                starts: 6,
+                                                wins: 3,
+                                                places: 2,
+                                                winPct: 50,
+                                              },
+                                              prizeMoney: 380000,
+                                              speedRating: 96,
+                                              lastStart: {
+                                                position: 2,
+                                                margin: '0.5L',
+                                                track: 'Flemington',
+                                                distance: 1400,
+                                              },
+                                            },
+                                            {
+                                              name: 'Storm Warning',
+                                              number: 12,
+                                              barrier: 8,
+                                              jockey: 'D. Lane',
+                                              trainer: 'M. Freedman',
+                                              weight: '56kg',
+                                              age: 6,
+                                              sex: 'G',
+                                              currentOdds: 5.5,
+                                              wasOdds: 4.8,
+                                              lastFive: '3-4-2-1-6',
+                                              careerRecord: {
+                                                starts: 22,
+                                                wins: 5,
+                                                places: 8,
+                                                winPct: 23,
+                                              },
+                                              trackRecord: {
+                                                starts: 5,
+                                                wins: 1,
+                                                places: 2,
+                                                winPct: 20,
+                                              },
+                                              distanceRecord: {
+                                                starts: 9,
+                                                wins: 2,
+                                                places: 4,
+                                                winPct: 22,
+                                              },
+                                              prizeMoney: 310000,
+                                              speedRating: 94,
+                                              lastStart: {
+                                                position: 3,
+                                                margin: '1.8L',
+                                                track: 'Caulfield',
+                                                distance: 1400,
+                                              },
+                                            },
+                                          ]}
+                                        />
+                                      </div>
+                                    )}
+
+                                    {/* Quick Action Buttons */}
+                                    {message.quickActions && message.quickActions.length > 0 && (
+                                      <div className="flex flex-wrap gap-2 mt-2">
+                                        {message.quickActions.map((action, idx) => (
+                                          <button
+                                            key={idx}
+                                            onClick={action.action}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-gray-50 border border-gray-200 hover:border-brand-primary text-gray-700 hover:text-brand-primary rounded-full text-xs font-medium transition-colors"
+                                          >
+                                            {action.icon === 'odds' && (
+                                              <BarChart3 className="w-3.5 h-3.5" />
+                                            )}
+                                            {action.icon === 'form' && (
+                                              <FileText className="w-3.5 h-3.5" />
+                                            )}
+                                            {action.icon === 'info' && (
+                                              <Info className="w-3.5 h-3.5" />
+                                            )}
+                                            {action.label}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {/* Contextual Suggestions */}
+                                    {message.suggestions && message.suggestions.length > 0 && (
+                                      <div className="mt-3 space-y-1.5">
+                                        <div className="text-xs text-gray-500 font-medium">
+                                          You might also ask:
+                                        </div>
+                                        {message.suggestions.map((suggestion, idx) => (
+                                          <button
+                                            key={idx}
+                                            onClick={() => setSearchQuery(suggestion)}
+                                            className="block w-full text-left px-3 py-2 bg-gray-50 hover:bg-white border border-gray-200 hover:border-brand-primary text-gray-700 hover:text-brand-primary rounded-lg text-xs transition-colors"
+                                          >
+                                            {suggestion}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                              </motion.div>
+                            );
+                          })}
+
+                          {/* AI Typing Indicator */}
+                          {isAiTyping && (
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className="flex justify-start"
+                            >
+                              <div className="bg-white text-gray-900 border border-gray-200 rounded-2xl px-4 py-3">
+                                <div className="flex gap-1">
+                                  <span
+                                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                    style={{ animationDelay: '0ms' }}
+                                  ></span>
+                                  <span
+                                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                    style={{ animationDelay: '150ms' }}
+                                  ></span>
+                                  <span
+                                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                    style={{ animationDelay: '300ms' }}
+                                  ></span>
                                 </div>
                               </div>
-                            </form>
-                          </div>
+                            </motion.div>
+                          )}
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+
+                        {/* Input at Bottom of Chat */}
+                        <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4">
+                          <form onSubmit={handleSubmitChat}>
+                            <div className="relative bg-gray-50 rounded-full border border-gray-200 focus-within:border-brand-primary transition-colors">
+                              <div className="flex items-center px-4 py-3">
+                                <textarea
+                                  ref={chatInputRef}
+                                  value={searchQuery}
+                                  onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    // Auto-resize textarea
+                                    e.target.style.height = 'auto';
+                                    e.target.style.height =
+                                      Math.min(e.target.scrollHeight, 120) + 'px';
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                      e.preventDefault();
+                                      handleSubmitChat();
+                                    }
+                                  }}
+                                  placeholder="Ask a follow-up question..."
+                                  rows={1}
+                                  className="flex-1 text-base outline-none focus:outline-none text-gray-900 placeholder-gray-400 bg-transparent resize-none overflow-y-auto"
+                                  style={{ maxHeight: '120px', minHeight: '24px' }}
+                                />
+                                <button
+                                  type="submit"
+                                  className="ml-2 bg-brand-primary hover:bg-brand-primary-intense text-white px-4 py-2 rounded-full font-semibold transition-colors text-sm flex-shrink-0"
+                                >
+                                  Send
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -862,7 +1010,9 @@ export default function HeroSectionSplit() {
                                   <span className="text-[10px] md:text-xs text-brand-dark-muted line-through">
                                     $5.20
                                   </span>
-                                  <span className="text-xs md:text-sm font-bold text-green-600">$4.20</span>
+                                  <span className="text-xs md:text-sm font-bold text-green-600">
+                                    $4.20
+                                  </span>
                                 </div>
                               </div>
                               <div className="flex items-center justify-between gap-2">
@@ -873,7 +1023,9 @@ export default function HeroSectionSplit() {
                                   Randwick R6 · 1200m
                                 </a>
                                 <div className="flex items-center gap-1 flex-shrink-0">
-                                  <span className="text-[10px] md:text-xs text-brand-dark-muted">Best</span>
+                                  <span className="text-[10px] md:text-xs text-brand-dark-muted">
+                                    Best
+                                  </span>
                                   <a
                                     href="#race-randwick-r6"
                                     className="w-8 h-4 md:w-10 md:h-5 bg-white rounded flex items-center justify-center p-0.5 hover:opacity-80 transition-opacity"
@@ -911,7 +1063,9 @@ export default function HeroSectionSplit() {
                                   <span className="text-[10px] md:text-xs text-brand-dark-muted line-through">
                                     $7.50
                                   </span>
-                                  <span className="text-xs md:text-sm font-bold text-green-600">$6.20</span>
+                                  <span className="text-xs md:text-sm font-bold text-green-600">
+                                    $6.20
+                                  </span>
                                 </div>
                               </div>
                               <div className="flex items-center justify-between gap-2">
@@ -922,7 +1076,9 @@ export default function HeroSectionSplit() {
                                   Caulfield R8 · 2400m
                                 </a>
                                 <div className="flex items-center gap-1 flex-shrink-0">
-                                  <span className="text-[10px] md:text-xs text-brand-dark-muted">Best</span>
+                                  <span className="text-[10px] md:text-xs text-brand-dark-muted">
+                                    Best
+                                  </span>
                                   <a
                                     href="#race-caulfield-r8"
                                     className="w-8 h-4 md:w-10 md:h-5 bg-white rounded flex items-center justify-center p-0.5 hover:opacity-80 transition-opacity"
@@ -963,7 +1119,9 @@ export default function HeroSectionSplit() {
                                   <span className="text-[10px] md:text-xs text-brand-dark-muted line-through">
                                     $3.80
                                   </span>
-                                  <span className="text-xs md:text-sm font-bold text-red-600">$4.60</span>
+                                  <span className="text-xs md:text-sm font-bold text-red-600">
+                                    $4.60
+                                  </span>
                                 </div>
                               </div>
                               <div className="flex items-center justify-between gap-2">
@@ -974,7 +1132,9 @@ export default function HeroSectionSplit() {
                                   Flemington R4 · 1400m
                                 </a>
                                 <div className="flex items-center gap-1 flex-shrink-0">
-                                  <span className="text-[10px] md:text-xs text-brand-dark-muted">Best</span>
+                                  <span className="text-[10px] md:text-xs text-brand-dark-muted">
+                                    Best
+                                  </span>
                                   <a
                                     href="#race-flemington-r4"
                                     className="w-8 h-4 md:w-10 md:h-5 bg-white rounded flex items-center justify-center p-0.5 hover:opacity-80 transition-opacity"
@@ -1240,6 +1400,23 @@ export default function HeroSectionSplit() {
           </div>
         </div>
       </div>
+
+      {/* Floating Chat Button - Shows after chat has been used and is closed */}
+      <AnimatePresence>
+        {chatHasBeenUsed && !isChatExpanded && (
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+            onClick={() => setIsChatExpanded(true)}
+            className="fixed bottom-6 right-6 z-40 hover:scale-110 transition-transform"
+            aria-label="Open chat"
+          >
+            <AnimatedOrb size="medium" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

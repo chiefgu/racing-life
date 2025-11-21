@@ -73,82 +73,84 @@ export default function FormGuideCard({
       className="bg-white rounded-lg border border-gray-200 overflow-hidden my-3"
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white px-4 py-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h4 className="font-bold text-xl mb-1">{horseName}</h4>
-            <p className="text-sm text-gray-300">
+      <div className="bg-gradient-to-r from-brand-primary to-brand-primary-intense text-white px-3 sm:px-4 py-2 sm:py-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <h4 className="font-bold text-sm sm:text-base truncate">{horseName}</h4>
+            <p className="text-[10px] sm:text-xs text-white/80 truncate">
               {age}yo {sex} · Barrier {barrier} · {weight}
             </p>
           </div>
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded">
-              <Trophy className="w-3.5 h-3.5" />
-              <span className="text-xs font-semibold">{winRate}% Win Rate</span>
-            </div>
-            <div className="text-xs text-gray-400">{placeRate}% Place Rate</div>
+          <div className="text-right flex-shrink-0">
+            <div className="text-[10px] sm:text-xs text-white/80">Win Rate</div>
+            <div className="text-lg sm:text-2xl font-bold whitespace-nowrap">{winRate}%</div>
           </div>
         </div>
+      </div>
 
-        {/* Trainer & Jockey */}
-        <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+      {/* Trainer & Jockey Info */}
+      <div className="px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border-b border-gray-100">
+        <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm">
           <div>
-            <div className="text-xs text-gray-400 mb-0.5">Trainer</div>
-            <div className="font-medium">{trainer}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5">Trainer</div>
+            <div className="font-medium text-gray-900 truncate">{trainer}</div>
           </div>
           <div>
-            <div className="text-xs text-gray-400 mb-0.5">Jockey</div>
-            <div className="font-medium">{jockey}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5">Jockey</div>
+            <div className="font-medium text-gray-900 truncate">{jockey}</div>
           </div>
         </div>
       </div>
 
       {/* Career Stats */}
-      <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-        <div className="grid grid-cols-4 gap-3 text-center">
+      <div className="px-3 sm:px-4 py-2 sm:py-3 border-b border-gray-100">
+        <div className="grid grid-cols-4 gap-2 sm:gap-3 text-center">
           <div>
-            <div className="text-xs text-gray-500 mb-1">Starts</div>
-            <div className="text-lg font-bold text-gray-900">{careerStats.starts}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Starts</div>
+            <div className="text-base sm:text-lg font-bold text-gray-900">{careerStats.starts}</div>
           </div>
           <div>
-            <div className="text-xs text-gray-500 mb-1">Wins</div>
-            <div className="text-lg font-bold text-green-600">{careerStats.wins}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Wins</div>
+            <div className="text-base sm:text-lg font-bold text-green-600">{careerStats.wins}</div>
           </div>
           <div>
-            <div className="text-xs text-gray-500 mb-1">Places</div>
-            <div className="text-lg font-bold text-blue-600">{careerStats.places}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Places</div>
+            <div className="text-base sm:text-lg font-bold text-blue-600">{careerStats.places}</div>
           </div>
           <div>
-            <div className="text-xs text-gray-500 mb-1">Prize</div>
-            <div className="text-sm font-bold text-gray-900">{careerStats.prize}</div>
+            <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Prize</div>
+            <div className="text-xs sm:text-sm font-bold text-gray-900">{careerStats.prize}</div>
           </div>
         </div>
       </div>
 
       {/* Track & Distance Records */}
       {(trackRecord || distanceRecord) && (
-        <div className="px-4 py-3 bg-blue-50 border-b border-gray-200">
-          <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border-b border-gray-100">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
             {trackRecord && (
               <div>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <Activity className="w-3.5 h-3.5 text-blue-600" />
-                  <span className="text-xs font-semibold text-blue-900">This Track</span>
+                  <Activity className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand-primary" />
+                  <span className="text-[10px] sm:text-xs font-semibold text-gray-900">
+                    This Track
+                  </span>
                 </div>
-                <div className="text-xs text-gray-700">
-                  {trackRecord.starts} starts: {trackRecord.wins} wins, {trackRecord.places} places
+                <div className="text-[10px] sm:text-xs text-gray-600">
+                  {trackRecord.starts} starts: {trackRecord.wins}W-{trackRecord.places}P
                 </div>
               </div>
             )}
             {distanceRecord && (
               <div>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <TrendingUp className="w-3.5 h-3.5 text-purple-600" />
-                  <span className="text-xs font-semibold text-purple-900">This Distance</span>
+                  <TrendingUp className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand-primary" />
+                  <span className="text-[10px] sm:text-xs font-semibold text-gray-900">
+                    This Distance
+                  </span>
                 </div>
-                <div className="text-xs text-gray-700">
-                  {distanceRecord.starts} starts: {distanceRecord.wins} wins,{' '}
-                  {distanceRecord.places} places
+                <div className="text-[10px] sm:text-xs text-gray-600">
+                  {distanceRecord.starts} starts: {distanceRecord.wins}W-{distanceRecord.places}P
                 </div>
               </div>
             )}
@@ -157,46 +159,40 @@ export default function FormGuideCard({
       )}
 
       {/* Recent Form */}
-      <div className="px-4 py-3">
-        <h5 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-3">
-          Last 5 Runs
-        </h5>
-        <div className="space-y-2">
-          {recentForm.slice(0, 5).map((result, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between text-sm py-2 border-b border-gray-100 last:border-0"
-            >
-              <div className="flex items-center gap-3 flex-1">
-                {/* Position Badge */}
-                <div
-                  className={`w-7 h-7 flex items-center justify-center rounded font-bold text-sm ${getPositionColor(
-                    result.position
-                  )}`}
-                >
-                  {result.position}
-                </div>
+      <div className="divide-y divide-gray-100">
+        {recentForm.slice(0, 5).map((result, index) => (
+          <div
+            key={index}
+            className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+              {/* Position Badge */}
+              <div
+                className={`w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded font-bold text-xs sm:text-sm flex-shrink-0 ${getPositionColor(
+                  result.position
+                )}`}
+              >
+                {result.position}
+              </div>
 
-                {/* Race Details */}
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900">
-                    {result.track} · {result.distance}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {result.date} · {result.trackCondition} · {result.position}/
-                    {result.totalRunners}
-                    {result.time && ` · ${result.time}`}
-                  </div>
+              {/* Race Details */}
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-gray-900 text-xs sm:text-sm truncate">
+                  {result.track} · {result.distance}
+                </div>
+                <div className="text-[10px] sm:text-xs text-gray-500 truncate">
+                  {result.date} · {result.trackCondition} · {result.position}/{result.totalRunners}
+                  {result.time && ` · ${result.time}`}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
       {/* Footer */}
-      <div className="bg-gray-50 px-4 py-2 text-xs text-gray-500 text-center border-t border-gray-200">
-        Full form guide · Updated regularly
+      <div className="bg-gray-50 px-2 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs text-gray-500 text-center border-t border-gray-200">
+        Complete form guide · Updated regularly
       </div>
     </motion.div>
   );

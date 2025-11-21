@@ -17,25 +17,31 @@ export default function EditorialHeader() {
   useEffect(() => {
     let lastScrollY = window.scrollY;
     let ticking = false;
+    const scrollThreshold = 5; // Minimum scroll distance to trigger change
+    const minScrollPos = 10; // Minimum scroll position to hide elements
 
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
+          const scrollDelta = Math.abs(currentScrollY - lastScrollY);
 
           // Update shadow state
           setIsScrolled(currentScrollY > 10);
 
-          // Show top bar when scrolling up, hide when scrolling down
-          if (currentScrollY < lastScrollY) {
-            // Scrolling up
-            setShowTopBar(true);
-          } else if (currentScrollY > 10 && currentScrollY > lastScrollY) {
-            // Scrolling down and past threshold
-            setShowTopBar(false);
+          // Only react to scroll changes that are significant enough
+          if (scrollDelta > scrollThreshold) {
+            if (currentScrollY < lastScrollY) {
+              // Scrolling up - always show
+              setShowTopBar(true);
+            } else if (currentScrollY > minScrollPos && currentScrollY > lastScrollY) {
+              // Scrolling down and past threshold - hide
+              setShowTopBar(false);
+            }
+
+            lastScrollY = currentScrollY;
           }
 
-          lastScrollY = currentScrollY;
           ticking = false;
         });
 
@@ -218,7 +224,12 @@ export default function EditorialHeader() {
       </div>
 
       {/* Next Races Bar */}
-      <div className="border-t border-gray-200 bg-gray-50">
+      <div
+        className={cn(
+          'border-t border-gray-200 bg-gray-50 transition-all duration-300 overflow-hidden will-change-[max-height,opacity]',
+          showTopBar ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'
+        )}
+      >
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="h-10 flex items-center gap-6 overflow-x-auto scrollbar-thin">
             {/* Label - sticky on scroll */}
