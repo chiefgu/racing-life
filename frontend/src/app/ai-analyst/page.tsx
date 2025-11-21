@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import AIAnalystClient from './AIAnalystClient';
+import AIAnalystPage from './AIAnalystPage';
 
 export const metadata: Metadata = {
   title: 'AI Racing Analyst | Racing Life',
@@ -7,6 +7,6 @@ export const metadata: Metadata = {
     'Get expert racing insights powered by AI. Ask anything about horses, races, odds, and form.',
 };
 
-export default function AIAnalystPage() {
-  return <AIAnalystClient />;
+export default function Page() {
+  return <AIAnalystPage />;
 }
